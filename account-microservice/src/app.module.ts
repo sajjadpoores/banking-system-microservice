@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { TypeOrmConfigService } from './config/typeorm/typeorm.config';
-import { MessageModule } from './modules/message/message.module';
 
 @Module({
   imports: [
@@ -16,7 +15,6 @@ import { MessageModule } from './modules/message/message.module';
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
-    MessageModule,
   ],
   controllers: [],
   providers: [],
