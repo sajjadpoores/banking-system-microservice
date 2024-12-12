@@ -2,18 +2,15 @@ import { DataSource, Repository } from 'typeorm';
 import { AccountEntity } from '../entity/acccount.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { TransferBodyDto } from 'src/modules/account/dto/transfer-body.dto';
-import { firstValueFrom } from 'rxjs';
-import { ResponseModel } from '../dto/response-model.dto';
-import { TransferDoneEventPayloadDto } from 'src/modules/account/dto/transfer-done-body.dto';
 import { TransferType } from '../enum/transfer-type.enum';
-import { ClientProxy } from '@nestjs/microservices';
+import { OutboxEntity } from '../entity/outbox.entity';
 
 export class AccountRepository extends Repository<AccountEntity> {
   constructor(@InjectDataSource() private dataSource: DataSource) {
     super(AccountEntity, dataSource.createEntityManager());
   }
 
-  async transfer(payload: TransferBodyDto, _rabbitmqClient: ClientProxy) {
+  async easyTransfer(payload: TransferBodyDto) {
     let sourceAccount: AccountEntity;
     let destinationAccount: AccountEntity;
 
@@ -51,25 +48,25 @@ export class AccountRepository extends Repository<AccountEntity> {
       );
       const transferNumber = transferNumberQueryResult[0].nextval.toString();
 
-      // notify transferLog microservice
-      await firstValueFrom(
-        _rabbitmqClient.send<ResponseModel<boolean>, TransferDoneEventPayloadDto>(
-          'transfer.done',
-          {
-            transferNumber,
-            amount: payload.amount,
-            description: payload.description,
-            destinationAccountNumber: payload.destinationAccountNumber,
-            destinationBalance: destinationAccount.balance,
-            sourceAccountNumber: payload.sourceAccountNumber,
-            sourceBalance: sourceAccount.balance,
-            destinationUserId: destinationAccount.userId,
-            sourceUserId: sourceAccount.userId,
-            transferDate: new Date(),
-            type: TransferType.TRANSFER,
-          },
-        ),
-      );
+      const outbox = manager.create(OutboxEntity, {
+        aggregateId: transferNumber,
+        type: TransferType.TRANSFER,
+        payload: {
+          transferNumber,
+          amount: payload.amount,
+          description: payload.description,
+          destinationAccountNumber: payload.destinationAccountNumber,
+          destinationBalance: destinationAccount.balance,
+          sourceAccountNumber: payload.sourceAccountNumber,
+          sourceBalance: sourceAccount.balance,
+          destinationUserId: destinationAccount.userId,
+          sourceUserId: sourceAccount.userId,
+          transferDate: new Date(),
+          type: TransferType.TRANSFER,
+        },
+      });
+
+      await manager.save(outbox);
     });
 
     return {
@@ -77,7 +74,7 @@ export class AccountRepository extends Repository<AccountEntity> {
     };
   }
 
-  async hardTransfer(payload: TransferBodyDto, _rabbitmqClient: ClientProxy) {
+  async hardTransfer(payload: TransferBodyDto) {
     let sourceAccount: AccountEntity;
     let destinationAccount: AccountEntity;
 
@@ -134,29 +131,25 @@ export class AccountRepository extends Repository<AccountEntity> {
       );
       const transferNumber = transferNumberQueryResult[0].nextval.toString();
 
-      // notify transferLog microservice
-      const notifyResult = await firstValueFrom(
-        _rabbitmqClient.send<ResponseModel<boolean>, TransferDoneEventPayloadDto>(
-          'transfer.done',
-          {
-            transferNumber,
-            amount: payload.amount,
-            description: payload.description,
-            destinationAccountNumber: payload.destinationAccountNumber,
-            destinationBalance: destinationAccount.balance,
-            sourceAccountNumber: payload.sourceAccountNumber,
-            sourceBalance: sourceAccount.balance,
-            destinationUserId: destinationAccount.userId,
-            sourceUserId: sourceAccount.userId,
-            transferDate: new Date(),
-            type: TransferType.HARD_TRANSFER,
-          },
-        ),
-      );
+      const outbox = manager.create(OutboxEntity, {
+        aggregateId: transferNumber,
+        type: TransferType.TRANSFER,
+        payload: {
+          transferNumber,
+          amount: payload.amount,
+          description: payload.description,
+          destinationAccountNumber: payload.destinationAccountNumber,
+          destinationBalance: destinationAccount.balance,
+          sourceAccountNumber: payload.sourceAccountNumber,
+          sourceBalance: sourceAccount.balance,
+          destinationUserId: destinationAccount.userId,
+          sourceUserId: sourceAccount.userId,
+          transferDate: new Date(),
+          type: TransferType.TRANSFER,
+        },
+      });
 
-      if (!notifyResult) {
-        throw new Error('Error in notify!');
-      }
+      await manager.save(outbox);
     });
 
     return {
