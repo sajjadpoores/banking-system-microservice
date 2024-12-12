@@ -9,7 +9,13 @@ export class AccountEntity extends BaseCustomEntity {
   @Column({ type: 'varchar', nullable: false })
   userId: string;
 
-  @Column({ type: 'int8', nullable: false })
+  @Column({ type: 'bigint', nullable: false, unique: true })
+  @Column({
+    type: 'bigint',
+    nullable: false,
+    unique: true,
+    default: () => "nextval('account_number_seq')",
+  })
   accountNumber: number;
 
   @Column({ type: 'int8', nullable: false })
