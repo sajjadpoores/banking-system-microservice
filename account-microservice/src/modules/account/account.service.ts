@@ -47,7 +47,9 @@ export class AccountService {
     }
   }
 
-  private async _easyTransfer(payload: TransferBodyDto) {
+  private async _easyTransfer(
+    payload: TransferBodyDto,
+  ): Promise<ResponseModel<TransferResponseDto>> {
     const transferResult = await this._accountRepository.transfer(
       payload,
       this._rabbitmqClient,
@@ -62,7 +64,9 @@ export class AccountService {
     };
   }
 
-  private async _hardTransfer(payload: TransferBodyDto) {
+  private async _hardTransfer(
+    payload: TransferBodyDto,
+  ): Promise<ResponseModel<TransferResponseDto>> {
     const transferResult = await this._accountRepository.hardTransfer(
       payload,
       this._rabbitmqClient,

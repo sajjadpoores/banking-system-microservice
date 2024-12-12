@@ -1,6 +1,6 @@
 import { TransferType } from 'src/shared/enum/transfer-type.enum';
 
-export class TransferDoneBodyDto {
+export class TransferDoneEventPayloadDto {
   transferNumber: number;
   type: TransferType;
   destinationAccountNumber: number;

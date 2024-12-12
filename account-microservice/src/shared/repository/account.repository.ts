@@ -4,7 +4,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { TransferBodyDto } from 'src/modules/account/dto/transfer-body.dto';
 import { firstValueFrom } from 'rxjs';
 import { ResponseModel } from '../dto/response-model.dto';
-import { TransferDoneBodyDto } from 'src/modules/account/dto/transfer-done-body.dto';
+import { TransferDoneEventPayloadDto } from 'src/modules/account/dto/transfer-done-body.dto';
 import { TransferType } from '../enum/transfer-type.enum';
 import { ClientProxy } from '@nestjs/microservices';
 
@@ -53,7 +53,7 @@ export class AccountRepository extends Repository<AccountEntity> {
 
       // notify transferLog microservice
       await firstValueFrom(
-        _rabbitmqClient.send<ResponseModel<boolean>, TransferDoneBodyDto>(
+        _rabbitmqClient.send<ResponseModel<boolean>, TransferDoneEventPayloadDto>(
           'transfer.done',
           {
             transferNumber,
@@ -136,7 +136,7 @@ export class AccountRepository extends Repository<AccountEntity> {
 
       // notify transferLog microservice
       const notifyResult = await firstValueFrom(
-        _rabbitmqClient.send<ResponseModel<boolean>, TransferDoneBodyDto>(
+        _rabbitmqClient.send<ResponseModel<boolean>, TransferDoneEventPayloadDto>(
           'transfer.done',
           {
             transferNumber,

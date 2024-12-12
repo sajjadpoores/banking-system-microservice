@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { TransferDoneBodyDto } from './dto/transfer-done-body.dto';
+import { TransferDoneEventPayloadDto } from './dto/transfer-done-event-payload.dto';
 import { TransferLogRepository } from 'src/shared/repository/transfer-log.repository';
 
 @Injectable()
 export class TransferLogService {
   constructor(private readonly _transferLogRepository: TransferLogRepository) {}
 
-  async transfer(payload: TransferDoneBodyDto): Promise<boolean> {
+  async transfer(payload: TransferDoneEventPayloadDto): Promise<boolean> {
     try {
       await this._transferLogRepository.create({
         transferNumber: payload.transferNumber,
