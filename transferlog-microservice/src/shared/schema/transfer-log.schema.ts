@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { BaseCustomSchema } from './base.schema';
+import { TransferType } from '../enum/transfer-type.enum';
 
 export type TransferLogDocument = HydratedDocument<TransferLog>;
 
@@ -19,10 +20,19 @@ export class TransferLog extends BaseCustomSchema {
   destinationUserId: string;
 
   @Prop({ type: Number, required: true })
-  amount: number;
+  sourceBalance: number;
 
   @Prop({ type: Number, required: true })
+  destinationBalance: number;
+
+  @Prop({ type: Number, required: true })
+  amount: number;
+
+  @Prop({ type: Date, required: true })
   date: Date;
+
+  @Prop({ type: String, enum: TransferType, required: true })
+  type: TransferType;
 }
 
 export const TransferLogSchema = SchemaFactory.createForClass(TransferLog);

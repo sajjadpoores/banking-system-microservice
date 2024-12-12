@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { join } from 'path';
-import { MongooseConfigService } from './config/mongoose.config';
+import { MongooseConfigService } from './config/mongoose/mongoose.config';
 import { TransferLogModule } from './modules/transfer-log/transfer-log.module';
 
 @Module({

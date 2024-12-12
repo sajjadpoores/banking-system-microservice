@@ -3,7 +3,7 @@ import { AccountController } from './account.controller';
 import { AccountService } from './account.service';
 import { ClientsModule } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
-import { RabbitMqClientService } from 'src/config/rabbitmq-client.config';
+import { RabbitMqClientService } from 'src/config/rabbitmq/rabbitmq-client.config';
 
 @Module({
   imports: [

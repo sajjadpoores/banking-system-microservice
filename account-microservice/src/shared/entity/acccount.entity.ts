@@ -18,6 +18,9 @@ export class AccountEntity extends BaseCustomEntity {
   })
   accountNumber: number;
 
-  @Column({ type: 'int8', nullable: false })
+  @Column({ type: 'int', nullable: false })
   balance: number;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lastHardTransferDate: Date | null;
 }
