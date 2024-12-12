@@ -8,8 +8,8 @@ export class TransferLogService {
 
   async transfer(payload: TransferDoneBodyDto): Promise<boolean> {
     try {
-      console.log(new Date(payload.transferDate));
       await this._transferLogRepository.create({
+        transferNumber: payload.transferNumber,
         sourceAccount: payload.sourceAccountNumber,
         sourceUserId: payload.sourceUserId,
         sourceBalance: payload.sourceBalance,

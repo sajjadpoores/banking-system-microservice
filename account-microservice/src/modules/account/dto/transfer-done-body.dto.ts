@@ -1,6 +1,7 @@
 import { TransferType } from 'src/shared/enum/transfer-type.enum';
 
 export class TransferDoneBodyDto {
+  transferNumber: number;
   type: TransferType;
   destinationAccountNumber: number;
   destinationUserId: string;

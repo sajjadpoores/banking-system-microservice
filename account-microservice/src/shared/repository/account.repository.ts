@@ -42,16 +42,21 @@ export class AccountRepository extends Repository<AccountEntity> {
 
       sourceAccount.balance -= payload.amount;
       destinationAccount.balance += payload.amount;
-      // TODO: generate transaction number;
 
       await manager.save(sourceAccount);
       await manager.save(destinationAccount);
+
+      const transferNumberQueryResult = await manager.query(
+        "SELECT nextval('transaction_number_seq')",
+      );
+      const transferNumber = transferNumberQueryResult[0].nextval.toString();
 
       // notify transferLog microservice
       await firstValueFrom(
         _rabbitmqClient.send<ResponseModel<boolean>, TransferDoneBodyDto>(
           'transfer.done',
           {
+            transferNumber,
             amount: payload.amount,
             description: payload.description,
             destinationAccountNumber: payload.destinationAccountNumber,
@@ -120,16 +125,21 @@ export class AccountRepository extends Repository<AccountEntity> {
       sourceAccount.balance -= payload.amount;
       sourceAccount.lastHardTransferDate = new Date();
       destinationAccount.balance += payload.amount;
-      // TODO: generate transaction number;
 
       await manager.save(sourceAccount);
       await manager.save(destinationAccount);
+
+      const transferNumberQueryResult = await manager.query(
+        "SELECT nextval('transaction_number_seq')",
+      );
+      const transferNumber = transferNumberQueryResult[0].nextval.toString();
 
       // notify transferLog microservice
       const notifyResult = await firstValueFrom(
         _rabbitmqClient.send<ResponseModel<boolean>, TransferDoneBodyDto>(
           'transfer.done',
           {
+            transferNumber,
             amount: payload.amount,
             description: payload.description,
             destinationAccountNumber: payload.destinationAccountNumber,
