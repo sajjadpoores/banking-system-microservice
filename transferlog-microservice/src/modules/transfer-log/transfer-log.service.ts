@@ -18,6 +18,7 @@ export class TransferLogService {
         destinationAccount: payload.destinationAccountNumber,
         destinationUserId: payload.destinationUserId,
         destinationBalance: payload.destinationBalance,
+        description: payload.description,
         amount: payload.amount,
         type: payload.type,
         date: new Date(payload.transferDate),

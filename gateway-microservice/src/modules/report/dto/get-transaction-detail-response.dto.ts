@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TransferType } from 'src/shared/enum/transfer-type.enum';
-import { TurnoverType } from 'src/shared/enum/turnover-type.enum';
 
 export class GetTransactionDetailResponseDto {
   @ApiProperty({
@@ -24,13 +23,6 @@ export class GetTransactionDetailResponseDto {
     type: Number,
   })
   destinationAccountNumber: number;
-
-  @ApiProperty({
-    description: 'نوع تراکنش',
-    example: TurnoverType.DEPOSIT,
-    enum: TurnoverType,
-  })
-  type: TurnoverType;
 
   @ApiProperty({
     description: 'نوع انتقال',
