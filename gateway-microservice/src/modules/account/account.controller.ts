@@ -52,4 +52,17 @@ export class AccountController {
   ): Promise<ResponseModel<DepositResponseDto>> {
     return this._accountService.deposit(payload);
   }
+
+  @Post('balance')
+  @ApiOperation({ summary: 'دریافت موجودی حساب' })
+  @ApiOkResponse({
+    status: 200,
+    description: 'موجودی حساب دریافت شد.',
+    type: ResponseModel<GetBalanceResponseDto>,
+  })
+  async getBalance(
+    @Body() payload: GetBalanceBodyDto,
+  ): Promise<ResponseModel<GetBalanceResponseDto>> {
+    return this._accountService.getBalance(payload);
+  }
 }
