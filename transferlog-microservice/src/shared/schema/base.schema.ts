@@ -23,7 +23,7 @@ export class BaseCustomSchema {
 
   @Prop({
     type: Boolean,
-    default: false,
+    default: true,
   })
   active: boolean;
 }

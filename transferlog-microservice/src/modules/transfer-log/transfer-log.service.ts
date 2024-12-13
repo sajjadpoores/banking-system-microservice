@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TransferDoneEventPayloadDto } from './dto/transfer-done-event-payload.dto';
 import { TransferLogRepository } from 'src/shared/repository/transfer-log.repository';
 import { DepositDoneEventPayloadDto } from './dto/deposit-done-event-payload.dto';
+import { GiftDoneEventPayloadDto } from './dto/gift-done-event-payload.dto';
 
 @Injectable()
 export class TransferLogService {
@@ -33,6 +34,28 @@ export class TransferLogService {
     try {
       await this._transferLogRepository.create({
         transferNumber: payload.transactionNumber,
+        sourceAccount: null,
+        sourceUserId: null,
+        sourceBalance: null,
+        destinationAccount: payload.destinationAccountNumber,
+        destinationUserId: payload.destinationUserId,
+        destinationBalance: payload.destinationBalance,
+        amount: payload.amount,
+        type: payload.type,
+        date: new Date(payload.depositDate),
+      });
+
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
+  async gift(payload: GiftDoneEventPayloadDto): Promise<boolean> {
+    try {
+      await this._transferLogRepository.create({
+        transferNumber: null,
         sourceAccount: null,
         sourceUserId: null,
         sourceBalance: null,
