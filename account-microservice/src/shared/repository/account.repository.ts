@@ -24,10 +24,17 @@ export class AccountRepository extends Repository<AccountEntity> {
         balance: initialGiftAmount,
       });
 
+      const transferNumberQueryResult = await manager.query(
+        "SELECT nextval('transaction_number_seq')",
+      );
+
+      const transactionNumber = transferNumberQueryResult[0].nextval.toString();
+
       const outbox = manager.create(OutboxEntity, {
         aggregateId: `${account.id}`,
         type: TransferType.GITF,
         payload: {
+          transactionNumber,
           destinationAccountNumber: account.accountNumber,
           destinationBalance: account.balance,
           destinationUserId: account.userId,
@@ -45,7 +52,7 @@ export class AccountRepository extends Repository<AccountEntity> {
   }
 
   async easyTransfer(payload: TransferBodyDto) {
-    let transferNumber: string;
+    let transactionNumber: string;
     let sourceAccount: AccountEntity;
     await this.dataSource.transaction(async (manager) => {
       sourceAccount = await manager.findOne(AccountEntity, {
@@ -80,13 +87,13 @@ export class AccountRepository extends Repository<AccountEntity> {
         "SELECT nextval('transaction_number_seq')",
       );
 
-      transferNumber = transferNumberQueryResult[0].nextval.toString();
+      transactionNumber = transferNumberQueryResult[0].nextval.toString();
 
       const outbox = manager.create(OutboxEntity, {
-        aggregateId: transferNumber,
+        aggregateId: transactionNumber,
         type: TransferType.TRANSFER,
         payload: {
-          transferNumber,
+          transactionNumber,
           amount: payload.amount,
           description: payload.description,
           destinationAccountNumber: payload.destinationAccountNumber,
@@ -104,7 +111,7 @@ export class AccountRepository extends Repository<AccountEntity> {
     });
 
     return {
-      transactionNumber: transferNumber,
+      transactionNumber,
       balance: sourceAccount.balance,
     };
   }
@@ -168,7 +175,7 @@ export class AccountRepository extends Repository<AccountEntity> {
 
       const outbox = manager.create(OutboxEntity, {
         aggregateId: transactionNumber,
-        type: TransferType.TRANSFER,
+        type: TransferType.HARD_TRANSFER,
         payload: {
           transactionNumber,
           amount: payload.amount,
@@ -180,7 +187,7 @@ export class AccountRepository extends Repository<AccountEntity> {
           destinationUserId: destinationAccount.userId,
           sourceUserId: sourceAccount.userId,
           transferDate: new Date(),
-          type: TransferType.TRANSFER,
+          type: TransferType.HARD_TRANSFER,
         },
       });
 
@@ -188,7 +195,7 @@ export class AccountRepository extends Repository<AccountEntity> {
     });
 
     return {
-      transactionNumber: transactionNumber,
+      transactionNumber,
       balance: sourceAccount.balance,
     };
   }

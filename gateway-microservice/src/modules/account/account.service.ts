@@ -41,7 +41,7 @@ export class AccountService {
       };
     }
     return firstValueFrom(
-      this._rabbitmqClient.send<ResponseModel<any>>(
+      this._rabbitmqClient.send<ResponseModel<TransferResponseDto>>(
         'account.transfer',
         payload,
       ),

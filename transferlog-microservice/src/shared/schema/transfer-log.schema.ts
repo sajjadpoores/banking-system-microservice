@@ -36,6 +36,9 @@ export class TransferLog extends BaseCustomSchema {
 
   @Prop({ type: String, enum: TransferType, required: true })
   type: TransferType;
+
+  @Prop({ type: String, required: false })
+  description: string;
 }
 
 export const TransferLogSchema = SchemaFactory.createForClass(TransferLog);

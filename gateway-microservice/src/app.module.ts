@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import { AccountModule } from './modules/account/account.module';
+import { ReportModule } from './modules/report/report.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AccountModule } from './modules/account/account.module';
       isGlobal: true,
     }),
     AccountModule,
+    ReportModule,
   ],
   controllers: [],
   providers: [],

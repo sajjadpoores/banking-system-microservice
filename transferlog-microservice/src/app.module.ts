@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { join } from 'path';
 import { MongooseConfigService } from './config/mongoose/mongoose.config';
 import { TransferLogModule } from './modules/transfer-log/transfer-log.module';
+import { ReportModule } from './modules/report/report.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TransferLogModule } from './modules/transfer-log/transfer-log.module';
       inject: [ConfigService],
     }),
     TransferLogModule,
+    ReportModule,
   ],
   controllers: [],
   providers: [],
