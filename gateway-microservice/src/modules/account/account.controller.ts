@@ -8,6 +8,8 @@ import { TransferBodyDto } from './dto/transfer-body.dto';
 import { TransferResponseDto } from './dto/transfer-response.dto';
 import { DepositBodyDto } from './dto/deposit-body.dto';
 import { DepositResponseDto } from './dto/deposit-response.dto';
+import { GetBalanceResponseDto } from './dto/get-balance-response.dto';
+import { GetBalanceBodyDto } from './dto/get-balance-body.dto';
 
 @Controller('account')
 @ApiTags('Account')
