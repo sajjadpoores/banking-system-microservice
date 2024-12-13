@@ -21,4 +21,11 @@ export class TransferLogController {
   ): Promise<boolean> {
     return this._transferLogService.deposit(payload);
   }
+
+  @MessagePattern('gift.done')
+  async giftDone(
+    @Payload() payload: DepositDoneEventPayloadDto,
+  ): Promise<boolean> {
+    return this._transferLogService.gift(payload);
+  }
 }

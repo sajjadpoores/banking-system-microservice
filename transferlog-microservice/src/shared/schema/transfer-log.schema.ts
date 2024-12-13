@@ -7,7 +7,7 @@ export type TransferLogDocument = HydratedDocument<TransferLog>;
 
 @Schema({ timestamps: true })
 export class TransferLog extends BaseCustomSchema {
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, required: false })
   transferNumber: number;
 
   @Prop({ type: Number, required: true })

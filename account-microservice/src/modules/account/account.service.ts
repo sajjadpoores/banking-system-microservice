@@ -20,16 +20,16 @@ export class AccountService {
   async createAccount(
     payload: CreateAccountBodyDto,
   ): Promise<ResponseModel<CreateAccountReponseDto>> {
-    const account = await this._accountRepository.save({
-      userId: payload.userId,
-      balance: this._configService.get<number>('INITIAL_ACCOUNT_GIFT'),
-    });
+    const result = await this._accountRepository.createAccount(
+      payload,
+      this._configService.get<number>('INITIAL_ACCOUNT_GIFT'),
+    );
     return {
       status: ReponseStatus.SUCESS,
       message: 'account created succesfully',
       data: {
-        accountNumber: account.accountNumber,
-        balance: account.balance,
+        accountNumber: result.accountNumber,
+        balance: result.balance,
       },
     };
   }

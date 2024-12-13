@@ -6,10 +6,42 @@ import { TransferType } from '../enum/transfer-type.enum';
 import { OutboxEntity } from '../entity/outbox.entity';
 import { DepositBodyDto } from 'src/modules/account/dto/deposit-body.dto';
 import { DepositResponseDto } from 'src/modules/account/dto/deposit-response.dto';
+import { CreateAccountBodyDto } from 'src/modules/account/dto/create-account-body.dto';
 
 export class AccountRepository extends Repository<AccountEntity> {
   constructor(@InjectDataSource() private dataSource: DataSource) {
     super(AccountEntity, dataSource.createEntityManager());
+  }
+
+  async createAccount(
+    payload: CreateAccountBodyDto,
+    initialGiftAmount: number,
+  ) {
+    let account: AccountEntity;
+    await this.dataSource.transaction(async (manager) => {
+      account = await manager.save(AccountEntity, {
+        userId: payload.userId,
+        balance: initialGiftAmount,
+      });
+
+      const outbox = manager.create(OutboxEntity, {
+        aggregateId: `${account.id}`,
+        type: TransferType.GITF,
+        payload: {
+          destinationAccountNumber: account.accountNumber,
+          destinationBalance: account.balance,
+          destinationUserId: account.userId,
+          amount: initialGiftAmount,
+          depositDate: new Date(),
+          type: TransferType.GITF,
+        },
+      });
+      await manager.save(outbox);
+    });
+    return {
+      accountNumber: account.accountNumber,
+      balance: account.balance,
+    };
   }
 
   async easyTransfer(payload: TransferBodyDto) {
