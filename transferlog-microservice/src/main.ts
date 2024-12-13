@@ -11,11 +11,12 @@ async function bootstrap() {
         urls: [process.env.RABBITMQ_URL],
         queue: 'transfer_queue',
         queueOptions: {
-          durable: false,
+          durable: true,
         },
       },
     },
   );
+
   await app.listen();
 }
 bootstrap();

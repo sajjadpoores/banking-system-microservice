@@ -6,7 +6,7 @@ export class CreateAccountBodyDto {
   @IsString()
   @Length(10)
   @IsNumberString()
-  @IsIranianNationalCode({ message: 'Invalid Iranian National Code' })
+  @IsIranianNationalCode({ message: 'شماره ملی وارد شده صحیح نمی‌باشد' })
   @ApiProperty({
     description: 'شماره ملی',
     example: '0720500494',

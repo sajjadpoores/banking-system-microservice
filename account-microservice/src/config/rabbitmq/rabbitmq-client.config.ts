@@ -20,7 +20,7 @@ export class RabbitMqClientService implements ClientsModuleOptionsFactory {
         urls: [this.config.get<string>('RABBITMQ_URL')],
         queue: this.queueName,
         queueOptions: {
-          durable: false,
+          durable: true,
         },
       },
     };

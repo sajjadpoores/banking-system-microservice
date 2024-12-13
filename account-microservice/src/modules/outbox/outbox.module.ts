@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AccountController } from './account.controller';
-import { AccountService } from './account.service';
+import { OutboxService } from './outbox.service';
+import { OutboxRepository } from 'src/shared/repository/outbox.repository';
 import { ClientsModule } from '@nestjs/microservices';
-import { ConfigService } from '@nestjs/config';
 import { RabbitMqClientService } from 'src/config/rabbitmq/rabbitmq-client.config';
+import { ConfigService } from '@nestjs/config';
+import { OutboxProcessor } from './outbox.cron';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { RabbitMqClientService } from 'src/config/rabbitmq/rabbitmq-client.confi
           useFactory: async (configService: ConfigService) =>
             new RabbitMqClientService(
               configService,
-              'account_queue',
+              'transfer_queue',
             ).createClientOptions(),
           inject: [ConfigService],
           name: 'account_broker',
@@ -21,7 +22,6 @@ import { RabbitMqClientService } from 'src/config/rabbitmq/rabbitmq-client.confi
       ],
     }),
   ],
-  controllers: [AccountController],
-  providers: [AccountService],
+  providers: [OutboxService, OutboxRepository, OutboxProcessor],
 })
-export class AccountModule {}
+export class OutboxModule {}
