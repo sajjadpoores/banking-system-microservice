@@ -4,6 +4,8 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { TransferBodyDto } from 'src/modules/account/dto/transfer-body.dto';
 import { TransferType } from '../enum/transfer-type.enum';
 import { OutboxEntity } from '../entity/outbox.entity';
+import { DepositBodyDto } from 'src/modules/account/dto/deposit-body.dto';
+import { DepositResponseDto } from 'src/modules/account/dto/deposit-response.dto';
 
 export class AccountRepository extends Repository<AccountEntity> {
   constructor(@InjectDataSource() private dataSource: DataSource) {
@@ -77,7 +79,7 @@ export class AccountRepository extends Repository<AccountEntity> {
 
   async hardTransfer(payload: TransferBodyDto) {
     let sourceAccount: AccountEntity;
-    let transferNumber: string;
+    let transactionNumber: string;
 
     await this.dataSource.transaction(async (manager) => {
       sourceAccount = await manager.findOne(AccountEntity, {
@@ -130,13 +132,13 @@ export class AccountRepository extends Repository<AccountEntity> {
       const transferNumberQueryResult = await manager.query(
         "SELECT nextval('transaction_number_seq')",
       );
-      transferNumber = transferNumberQueryResult[0].nextval.toString();
+      transactionNumber = transferNumberQueryResult[0].nextval.toString();
 
       const outbox = manager.create(OutboxEntity, {
-        aggregateId: transferNumber,
+        aggregateId: transactionNumber,
         type: TransferType.TRANSFER,
         payload: {
-          transferNumber,
+          transactionNumber,
           amount: payload.amount,
           description: payload.description,
           destinationAccountNumber: payload.destinationAccountNumber,
@@ -154,8 +156,91 @@ export class AccountRepository extends Repository<AccountEntity> {
     });
 
     return {
-      transactionNumber: transferNumber,
+      transactionNumber: transactionNumber,
       balance: sourceAccount.balance,
     };
+  }
+
+  async deposit(
+    payload: DepositBodyDto,
+    dailyLimit: number,
+  ): Promise<DepositResponseDto> {
+    let transactionNumber: string;
+    let account: AccountEntity;
+
+    await this.dataSource.transaction(async (manager) => {
+      account = await manager.findOne(AccountEntity, {
+        where: { accountNumber: payload.accountNumber },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!account) {
+        throw new Error('Account not found.');
+      }
+
+      const today = new Date();
+      const todayDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+      );
+
+      // check sum of account today's deposit
+      if (payload.amount > dailyLimit) {
+        throw new Error(`Daily deposit limit of ${dailyLimit} exceeded.`);
+      }
+
+      if (
+        account.lastDepositDate &&
+        this._isSameDay(account.lastDepositDate, todayDate)
+      ) {
+        const newTodayDepositSum = account.todayDepositSum + payload.amount;
+        console.log(newTodayDepositSum);
+        if (newTodayDepositSum > dailyLimit) {
+          throw new Error(`Daily deposit limit of ${dailyLimit} exceeded.`);
+        }
+        account.todayDepositSum = newTodayDepositSum;
+      } else {
+        account.todayDepositSum = payload.amount;
+        account.lastDepositDate = todayDate;
+      }
+
+      account.balance += payload.amount;
+      await manager.save(account);
+
+      const transactionNumberQueryResult = await manager.query(
+        "SELECT nextval('transaction_number_seq')",
+      );
+      transactionNumber = transactionNumberQueryResult[0].nextval.toString();
+
+      const outbox = manager.create(OutboxEntity, {
+        aggregateId: transactionNumber,
+        type: TransferType.DEPOSIT,
+        payload: {
+          transactionNumber,
+          destinationAccountNumber: payload.accountNumber,
+          destinationBalance: account.balance,
+          destinationUserId: account.userId,
+          amount: payload.amount,
+          depositDate: new Date(),
+          type: TransferType.DEPOSIT,
+        },
+      });
+
+      await manager.save(outbox);
+    });
+
+    return {
+      transactionNumber,
+      balance: account.balance,
+    };
+  }
+
+  private _isSameDay(date1: Date, date2: Date): boolean {
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
   }
 }

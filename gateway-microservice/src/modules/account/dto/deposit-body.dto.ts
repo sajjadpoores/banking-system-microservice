@@ -1,10 +1,4 @@
-import {
-  IsNotEmpty,
-  IsNumber,
-  IsPositive,
-  IsString,
-  Max,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsPositive, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class DepositBodyDto {
@@ -13,14 +7,14 @@ export class DepositBodyDto {
     example: 1000001,
     type: Number,
   })
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
   accountNumber: number;
 
   @ApiProperty({
     type: Number,
     description: 'مبلغ واریزی',
-    example: 1000,
+    example: 100000,
   })
   @IsNotEmpty()
   @IsPositive()

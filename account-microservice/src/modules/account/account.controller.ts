@@ -6,6 +6,8 @@ import { TransferBodyDto } from './dto/transfer-body.dto';
 import { ResponseModel } from 'src/shared/dto/response-model.dto';
 import { CreateAccountReponseDto } from './dto/create-account-response.dto';
 import { TransferResponseDto } from './dto/transfer-response.dto';
+import { DepositBodyDto } from './dto/deposit-body.dto';
+import { DepositResponseDto } from './dto/deposit-response.dto';
 
 @Controller('account')
 export class AccountController {
@@ -23,5 +25,12 @@ export class AccountController {
     @Payload() payload: TransferBodyDto,
   ): Promise<ResponseModel<TransferResponseDto>> {
     return this._accountService.transfer(payload);
+  }
+
+  @MessagePattern('account.deposit')
+  async handleDeposit(
+    @Payload() payload: DepositBodyDto,
+  ): Promise<ResponseModel<DepositResponseDto>> {
+    return this._accountService.deposit(payload);
   }
 }
