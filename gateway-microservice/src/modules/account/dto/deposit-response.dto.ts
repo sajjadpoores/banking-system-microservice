@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class TransferResponseDto {
+export class DepositResponseDto {
   @ApiProperty({
     type: Number,
     description: 'شناسه تراکنش',

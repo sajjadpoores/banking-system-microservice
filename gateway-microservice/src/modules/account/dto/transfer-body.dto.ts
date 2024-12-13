@@ -38,6 +38,7 @@ export class TransferBodyDto {
   @Max(100000000, {
     message: 'ماکزیموم مبلغ قابل انتقال 100 میلیون ریال می‌باشد.',
   })
+  @IsNumber()
   amount: number;
 
   @ApiProperty({

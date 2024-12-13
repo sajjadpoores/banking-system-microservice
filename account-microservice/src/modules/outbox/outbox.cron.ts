@@ -28,8 +28,13 @@ export class OutboxProcessor {
           await firstValueFrom(
             this.messageBrokerClient.emit('transfer.done', message.payload),
           );
+          await this._outboxService.markProcessed(message.id);
+        } else if (message.type === TransferType.DEPOSIT) {
+          await firstValueFrom(
+            this.messageBrokerClient.emit('deposit.done', message.payload),
+          );
+          await this._outboxService.markProcessed(message.id);
         }
-        await this._outboxService.markProcessed(message.id);
       } catch (error) {
         console.log(error);
       }

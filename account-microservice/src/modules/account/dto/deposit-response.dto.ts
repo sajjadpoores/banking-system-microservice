@@ -1,4 +1,4 @@
-export class TransferResponseDto {
+export class DepositResponseDto {
   transactionNumber: string;
   balance: number;
 }

@@ -23,4 +23,10 @@ export class AccountEntity extends BaseCustomEntity {
 
   @Column({ type: 'timestamp', nullable: true })
   lastHardTransferDate: Date | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lastDepositDate: Date | null;
+
+  @Column({ type: 'int', nullable: false, default: 0 })
+  todayDepositSum: number;
 }

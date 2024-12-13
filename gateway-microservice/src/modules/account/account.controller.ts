@@ -6,6 +6,8 @@ import { ResponseModel } from 'src/shared/dto/response-model.dto';
 import { CreateAccountReponseDto } from './dto/create-account-response.dto';
 import { TransferBodyDto } from './dto/transfer-body.dto';
 import { TransferResponseDto } from './dto/transfer-response.dto';
+import { DepositBodyDto } from './dto/deposit-body.dto';
+import { DepositResponseDto } from './dto/deposit-response.dto';
 
 @Controller('account')
 @ApiTags('Account')
@@ -36,5 +38,18 @@ export class AccountController {
     @Body() payload: TransferBodyDto,
   ): Promise<ResponseModel<TransferResponseDto>> {
     return this._accountService.transfer(payload);
+  }
+
+  @Post('deposit')
+  @ApiOperation({ summary: 'افزایش موجودی حساب' })
+  @ApiOkResponse({
+    status: 200,
+    description: 'افزایش موجودی حساب انجام شد.',
+    type: ResponseModel<DepositResponseDto>,
+  })
+  async deposit(
+    @Body() payload: DepositBodyDto,
+  ): Promise<ResponseModel<DepositResponseDto>> {
+    return this._accountService.deposit(payload);
   }
 }

@@ -13,16 +13,16 @@ export class TransferLog extends BaseCustomSchema {
   @Prop({ type: Number, required: true })
   destinationAccount: number;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, required: false })
   sourceAccount: number;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: false })
   sourceUserId: string;
 
   @Prop({ type: String, required: true })
   destinationUserId: string;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, required: false })
   sourceBalance: number;
 
   @Prop({ type: Number, required: true })
