@@ -9,6 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { TransferBodyDto } from './dto/transfer-body.dto';
 import { DepositBodyDto } from './dto/deposit-body.dto';
 import { DepositResponseDto } from './dto/deposit-response.dto';
+import { GetBalanceBodyDto } from './dto/get-balance-body.dto';
+import { GetBalanceResponseDto } from './dto/get-balance-response.dto';
 
 @Injectable()
 export class AccountService {
@@ -25,7 +27,7 @@ export class AccountService {
       this._configService.get<number>('INITIAL_ACCOUNT_GIFT'),
     );
     return {
-      status: ReponseStatus.SUCESS,
+      status: ReponseStatus.SUCCESS,
       message: 'account created succesfully',
       data: {
         accountNumber: result.accountNumber,
@@ -46,7 +48,7 @@ export class AccountService {
       result = await this._accountRepository.hardTransfer(payload);
     }
     return {
-      status: ReponseStatus.SUCESS,
+      status: ReponseStatus.SUCCESS,
       message: 'Transfer successfully done.',
       data: {
         transactionNumber: result.transactionNumber,
@@ -64,11 +66,36 @@ export class AccountService {
     );
 
     return {
-      status: ReponseStatus.SUCESS,
+      status: ReponseStatus.SUCCESS,
       message: 'Deposit successfully completed.',
       data: {
         transactionNumber: result.transactionNumber,
         balance: result.balance,
+      },
+    };
+  }
+
+  async getBalance(
+    payload: GetBalanceBodyDto,
+  ): Promise<ResponseModel<GetBalanceResponseDto>> {
+    const { accountNumber } = payload;
+    const account =
+      await this._accountRepository.findAccountByNumber(accountNumber);
+
+    if (!account) {
+      return {
+        status: ReponseStatus.FAILED,
+        message: 'Account not found.',
+        data: null,
+      };
+    }
+
+    return {
+      status: ReponseStatus.SUCCESS,
+      message: 'Account balance retrieved successfully.',
+      data: {
+        accountNumber: account.accountNumber,
+        balance: account.balance,
       },
     };
   }

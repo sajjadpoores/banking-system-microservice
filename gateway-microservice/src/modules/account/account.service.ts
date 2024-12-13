@@ -9,6 +9,8 @@ import { TransferResponseDto } from './dto/transfer-response.dto';
 import { DepositBodyDto } from './dto/deposit-body.dto';
 import { DepositResponseDto } from './dto/deposit-response.dto';
 import { ReponseStatus } from 'src/shared/enum/response-status.enum';
+import { GetBalanceBodyDto } from './dto/get-balance-body.dto';
+import { GetBalanceResponseDto } from './dto/get-balance-response.dto';
 
 @Injectable()
 export class AccountService {
@@ -52,6 +54,17 @@ export class AccountService {
     return firstValueFrom(
       this._rabbitmqClient.send<ResponseModel<DepositResponseDto>>(
         'account.deposit',
+        payload,
+      ),
+    );
+  }
+
+  async getBalance(
+    payload: GetBalanceBodyDto,
+  ): Promise<ResponseModel<GetBalanceResponseDto>> {
+    return firstValueFrom(
+      this._rabbitmqClient.send<ResponseModel<GetBalanceResponseDto>>(
+        'account.getBalance',
         payload,
       ),
     );
