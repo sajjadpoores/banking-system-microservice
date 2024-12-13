@@ -6,6 +6,8 @@ import { firstValueFrom } from 'rxjs';
 import { ResponseModel } from 'src/shared/dto/response-model.dto';
 import { TransferBodyDto } from './dto/transfer-body.dto';
 import { TransferResponseDto } from './dto/transfer-response.dto';
+import { DepositBodyDto } from './dto/deposit-body.dto';
+import { DepositResponseDto } from './dto/deposit-response.dto';
 
 @Injectable()
 export class AccountService {
@@ -31,6 +33,17 @@ export class AccountService {
     return firstValueFrom(
       this._rabbitmqClient.send<ResponseModel<any>>(
         'account.transfer',
+        payload,
+      ),
+    );
+  }
+
+  async deposit(
+    payload: DepositBodyDto,
+  ): Promise<ResponseModel<DepositResponseDto>> {
+    return firstValueFrom(
+      this._rabbitmqClient.send<ResponseModel<DepositResponseDto>>(
+        'account.deposit',
         payload,
       ),
     );
