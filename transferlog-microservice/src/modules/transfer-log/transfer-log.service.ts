@@ -11,7 +11,7 @@ export class TransferLogService {
   async transfer(payload: TransferDoneEventPayloadDto): Promise<boolean> {
     try {
       await this._transferLogRepository.create({
-        transactionNumber: payload.transactionNumber,
+        transferNumber: payload.transactionNumber,
         sourceAccount: payload.sourceAccountNumber,
         sourceUserId: payload.sourceUserId,
         sourceBalance: payload.sourceBalance,
@@ -55,7 +55,7 @@ export class TransferLogService {
   async gift(payload: GiftDoneEventPayloadDto): Promise<boolean> {
     try {
       await this._transferLogRepository.create({
-        transferNumber: null,
+        transferNumber: payload.transactionNumber,
         sourceAccount: null,
         sourceUserId: null,
         sourceBalance: null,

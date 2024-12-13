@@ -1,0 +1,25 @@
+import { Controller, Get, Query } from '@nestjs/common';
+import { ReportService } from './report.service';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ResponseModel } from 'src/shared/dto/response-model.dto';
+import { GetTurnoverResponseDto } from './dto/get-turnover-response.dto';
+import { GetTurnoverQueryDto } from './dto/get-turnover-body.dto';
+
+@ApiTags('Report')
+@Controller('report')
+export class ReportController {
+  constructor(private readonly _reportService: ReportService) {}
+
+  @Get('turnover')
+  @ApiOperation({ summary: 'دریافت گردش حساب' })
+  @ApiOkResponse({
+    status: 200,
+    description: 'گردش حساب با موفقیت دریافت شد.',
+    type: ResponseModel<GetTurnoverResponseDto>,
+  })
+  async getAccountTurnover(
+    @Query() filters: GetTurnoverQueryDto,
+  ): Promise<ResponseModel<GetTurnoverResponseDto>> {
+    return this._reportService.getAccountTurnover(filters);
+  }
+}
