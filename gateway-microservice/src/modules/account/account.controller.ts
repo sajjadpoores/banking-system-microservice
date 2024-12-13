@@ -8,6 +8,8 @@ import { TransferBodyDto } from './dto/transfer-body.dto';
 import { TransferResponseDto } from './dto/transfer-response.dto';
 import { DepositBodyDto } from './dto/deposit-body.dto';
 import { DepositResponseDto } from './dto/deposit-response.dto';
+import { GetBalanceResponseDto } from './dto/get-balance-response.dto';
+import { GetBalanceBodyDto } from './dto/get-balance-body.dto';
 
 @Controller('account')
 @ApiTags('Account')
@@ -51,5 +53,18 @@ export class AccountController {
     @Body() payload: DepositBodyDto,
   ): Promise<ResponseModel<DepositResponseDto>> {
     return this._accountService.deposit(payload);
+  }
+
+  @Post('balance')
+  @ApiOperation({ summary: 'دریافت موجودی حساب' })
+  @ApiOkResponse({
+    status: 200,
+    description: 'موجودی حساب دریافت شد.',
+    type: ResponseModel<GetBalanceResponseDto>,
+  })
+  async getBalance(
+    @Body() payload: GetBalanceBodyDto,
+  ): Promise<ResponseModel<GetBalanceResponseDto>> {
+    return this._accountService.getBalance(payload);
   }
 }
