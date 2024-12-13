@@ -268,6 +268,15 @@ export class AccountRepository extends Repository<AccountEntity> {
     };
   }
 
+  async findAccountByNumber(
+    accountNumber: number,
+  ): Promise<AccountEntity | null> {
+    const account = await this.findOne({
+      where: { accountNumber },
+    });
+    return account || null;
+  }
+
   private _isSameDay(date1: Date, date2: Date): boolean {
     return (
       date1.getFullYear() === date2.getFullYear() &&
