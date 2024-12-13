@@ -11,7 +11,7 @@ async function bootstrap() {
         urls: [process.env.RABBITMQ_URL],
         queue: 'account_queue',
         queueOptions: {
-          durable: false,
+          durable: true,
         },
       },
     },
