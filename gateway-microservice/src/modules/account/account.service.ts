@@ -8,6 +8,7 @@ import { TransferBodyDto } from './dto/transfer-body.dto';
 import { TransferResponseDto } from './dto/transfer-response.dto';
 import { DepositBodyDto } from './dto/deposit-body.dto';
 import { DepositResponseDto } from './dto/deposit-response.dto';
+import { ReponseStatus } from 'src/shared/enum/response-status.enum';
 
 @Injectable()
 export class AccountService {
@@ -30,6 +31,13 @@ export class AccountService {
   async transfer(
     payload: TransferBodyDto,
   ): Promise<ResponseModel<TransferResponseDto>> {
+    if (payload.sourceAccountNumber === payload.destinationAccountNumber) {
+      return {
+        status: ReponseStatus.FAILED,
+        message: 'حساب مبدا و مقصد نمی تواند یکی باشد',
+        data: null,
+      };
+    }
     return firstValueFrom(
       this._rabbitmqClient.send<ResponseModel<any>>(
         'account.transfer',

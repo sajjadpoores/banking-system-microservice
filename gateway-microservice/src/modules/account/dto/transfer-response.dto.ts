@@ -6,7 +6,7 @@ export class TransferResponseDto {
     description: 'شناسه تراکنش',
     example: 1234567890,
   })
-  transactionNumber: number;
+  transactionNumber: string;
 
   @ApiProperty({
     type: Number,

@@ -47,6 +47,7 @@ export class AccountService {
       status: ReponseStatus.SUCESS,
       message: 'Transfer successfully done.',
       data: {
+        transactionNumber: result.transactionNumber,
         balance: result.balance,
       },
     };

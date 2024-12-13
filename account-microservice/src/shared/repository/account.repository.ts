@@ -11,9 +11,8 @@ export class AccountRepository extends Repository<AccountEntity> {
   }
 
   async easyTransfer(payload: TransferBodyDto) {
+    let transferNumber: string;
     let sourceAccount: AccountEntity;
-    let destinationAccount: AccountEntity;
-
     await this.dataSource.transaction(async (manager) => {
       sourceAccount = await manager.findOne(AccountEntity, {
         where: { accountNumber: payload.sourceAccountNumber },
@@ -28,7 +27,7 @@ export class AccountRepository extends Repository<AccountEntity> {
         throw new Error('Insufficient balance in source account.');
       }
 
-      destinationAccount = await manager.findOne(AccountEntity, {
+      const destinationAccount = await manager.findOne(AccountEntity, {
         where: { accountNumber: payload.destinationAccountNumber },
         lock: { mode: 'pessimistic_write' },
       });
@@ -46,7 +45,8 @@ export class AccountRepository extends Repository<AccountEntity> {
       const transferNumberQueryResult = await manager.query(
         "SELECT nextval('transaction_number_seq')",
       );
-      const transferNumber = transferNumberQueryResult[0].nextval.toString();
+
+      transferNumber = transferNumberQueryResult[0].nextval.toString();
 
       const outbox = manager.create(OutboxEntity, {
         aggregateId: transferNumber,
@@ -70,13 +70,14 @@ export class AccountRepository extends Repository<AccountEntity> {
     });
 
     return {
+      transactionNumber: transferNumber,
       balance: sourceAccount.balance,
     };
   }
 
   async hardTransfer(payload: TransferBodyDto) {
     let sourceAccount: AccountEntity;
-    let destinationAccount: AccountEntity;
+    let transferNumber: string;
 
     await this.dataSource.transaction(async (manager) => {
       sourceAccount = await manager.findOne(AccountEntity, {
@@ -110,7 +111,7 @@ export class AccountRepository extends Repository<AccountEntity> {
         }
       }
 
-      destinationAccount = await manager.findOne(AccountEntity, {
+      const destinationAccount = await manager.findOne(AccountEntity, {
         where: { accountNumber: payload.destinationAccountNumber },
         lock: { mode: 'pessimistic_write' },
       });
@@ -129,7 +130,7 @@ export class AccountRepository extends Repository<AccountEntity> {
       const transferNumberQueryResult = await manager.query(
         "SELECT nextval('transaction_number_seq')",
       );
-      const transferNumber = transferNumberQueryResult[0].nextval.toString();
+      transferNumber = transferNumberQueryResult[0].nextval.toString();
 
       const outbox = manager.create(OutboxEntity, {
         aggregateId: transferNumber,
@@ -153,6 +154,7 @@ export class AccountRepository extends Repository<AccountEntity> {
     });
 
     return {
+      transactionNumber: transferNumber,
       balance: sourceAccount.balance,
     };
   }
