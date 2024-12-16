@@ -22,6 +22,7 @@ export class LogService {
         amount: payload.amount,
         type: payload.type,
         date: new Date(payload.transferDate),
+        status: payload.status,
       });
 
       return true;
@@ -44,6 +45,7 @@ export class LogService {
         amount: payload.amount,
         type: payload.type,
         date: new Date(payload.depositDate),
+        status: payload.status,
       });
 
       return true;
@@ -66,6 +68,7 @@ export class LogService {
         amount: payload.amount,
         type: payload.type,
         date: new Date(payload.depositDate),
+        status: payload.status,
       });
 
       return true;

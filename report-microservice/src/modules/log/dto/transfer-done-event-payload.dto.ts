@@ -1,3 +1,4 @@
+import { TransactionStatus } from 'src/shared/enum/transaction-status.enum';
 import { TransferType } from 'src/shared/enum/transfer-type.enum';
 
 export class TransferDoneEventPayloadDto {
@@ -12,4 +13,5 @@ export class TransferDoneEventPayloadDto {
   amount: number;
   transferDate: Date;
   description: string;
+  status: TransactionStatus;
 }

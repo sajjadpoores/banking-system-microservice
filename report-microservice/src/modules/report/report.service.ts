@@ -41,6 +41,7 @@ export class ReportService {
         destinationAccountNumber: txn.destinationAccount,
         sourceAccoutNumber: txn.sourceAccount,
         transactionNumber: `${txn.transferNumber}`,
+        status: txn.status,
       }),
     );
 
@@ -75,6 +76,7 @@ export class ReportService {
       amount: transaction.amount,
       transactionDate: transaction.date.toISOString(),
       description: transaction.description || '',
+      status: transaction.status,
     };
 
     return {
