@@ -14,7 +14,7 @@ import { OutboxProcessor } from './outbox.cron';
           useFactory: async (configService: ConfigService) =>
             new RabbitMqClientService(
               configService,
-              'transfer_queue',
+              'report_queue',
             ).createClientOptions(),
           inject: [ConfigService],
           name: 'account_broker',
