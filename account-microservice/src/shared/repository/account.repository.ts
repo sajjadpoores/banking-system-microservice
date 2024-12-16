@@ -52,7 +52,6 @@ export class AccountRepository extends Repository<AccountEntity> {
   }
 
   async easyTransfer(payload: TransferBodyDto) {
-    let transactionNumber: string;
     let sourceAccount: AccountEntity;
     await this.dataSource.transaction(async (manager) => {
       sourceAccount = await manager.findOne(AccountEntity, {
@@ -83,17 +82,11 @@ export class AccountRepository extends Repository<AccountEntity> {
       await manager.save(sourceAccount);
       await manager.save(destinationAccount);
 
-      const transferNumberQueryResult = await manager.query(
-        "SELECT nextval('transaction_number_seq')",
-      );
-
-      transactionNumber = transferNumberQueryResult[0].nextval.toString();
-
       const outbox = manager.create(OutboxEntity, {
-        aggregateId: transactionNumber,
+        aggregateId: payload.transactionNumber,
         type: TransferType.TRANSFER,
         payload: {
-          transactionNumber,
+          transactionNumber: payload.transactionNumber,
           amount: payload.amount,
           description: payload.description,
           destinationAccountNumber: payload.destinationAccountNumber,
@@ -111,14 +104,13 @@ export class AccountRepository extends Repository<AccountEntity> {
     });
 
     return {
-      transactionNumber,
+      transactionNumber: payload.transactionNumber,
       balance: sourceAccount.balance,
     };
   }
 
   async hardTransfer(payload: TransferBodyDto) {
     let sourceAccount: AccountEntity;
-    let transactionNumber: string;
 
     await this.dataSource.transaction(async (manager) => {
       sourceAccount = await manager.findOne(AccountEntity, {
@@ -168,16 +160,11 @@ export class AccountRepository extends Repository<AccountEntity> {
       await manager.save(sourceAccount);
       await manager.save(destinationAccount);
 
-      const transferNumberQueryResult = await manager.query(
-        "SELECT nextval('transaction_number_seq')",
-      );
-      transactionNumber = transferNumberQueryResult[0].nextval.toString();
-
       const outbox = manager.create(OutboxEntity, {
-        aggregateId: transactionNumber,
+        aggregateId: payload.transactionNumber,
         type: TransferType.HARD_TRANSFER,
         payload: {
-          transactionNumber,
+          transactionNumber: payload.transactionNumber,
           amount: payload.amount,
           description: payload.description,
           destinationAccountNumber: payload.destinationAccountNumber,
@@ -195,7 +182,7 @@ export class AccountRepository extends Repository<AccountEntity> {
     });
 
     return {
-      transactionNumber,
+      transactionNumber: payload.transactionNumber,
       balance: sourceAccount.balance,
     };
   }

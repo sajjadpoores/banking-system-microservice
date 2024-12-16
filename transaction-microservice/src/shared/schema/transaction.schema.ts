@@ -6,20 +6,14 @@ export type TransactionLogDocument = HydratedDocument<Transaction>;
 
 @Schema({ timestamps: true })
 export class Transaction extends BaseCustomSchema {
-  @Prop({ type: Number, required: true })
-  transactionNumber: number;
-
-  @Prop({ type: Number, required: true })
-  destinationAccount: number;
-
-  @Prop({ type: Number, required: true })
-  sourceAccount: number;
-
   @Prop({ type: String, required: true })
-  sourceUserId: string;
+  transactionNumber: string;
 
-  @Prop({ type: String, required: true })
-  destinationUserId: string;
+  @Prop({ type: Number, required: true })
+  destinationAccountNumber: number;
+
+  @Prop({ type: Number, required: true })
+  sourceAccountNumber: number;
 
   @Prop({ type: Number, required: true })
   amount: number;
@@ -29,6 +23,9 @@ export class Transaction extends BaseCustomSchema {
 
   @Prop({ type: String, required: false })
   description: string;
+
+  @Prop({ type: Boolean, required: true, default: false })
+  processed: boolean;
 }
 
-export const TransferLogSchema = SchemaFactory.createForClass(Transaction);
+export const TransactionSchema = SchemaFactory.createForClass(Transaction);

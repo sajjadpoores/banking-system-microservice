@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { LogService as logService } from './log.service';
+import { LogService } from './log.service';
 import { TransferDoneEventPayloadDto } from './dto/transfer-done-event-payload.dto';
 import { DepositDoneEventPayloadDto } from './dto/deposit-done-event-payload.dto';
 
 @Controller('log')
 export class logController {
-  constructor(private readonly _logService: logService) {}
+  constructor(private readonly _logService: LogService) {}
 
   @MessagePattern('log.transfered')
   async transferDone(

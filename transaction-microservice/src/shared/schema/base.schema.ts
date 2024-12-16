@@ -1,7 +1,10 @@
 import { Prop, Schema } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 
 @Schema({ timestamps: true }) // Automatically manages createdAt and updatedAt
 export class BaseCustomSchema {
+  _id: Types.ObjectId;
+
   @Prop({
     type: Date,
     default: Date.now,
