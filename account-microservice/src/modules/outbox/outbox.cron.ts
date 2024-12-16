@@ -26,17 +26,17 @@ export class OutboxProcessor {
           message.type === TransferType.HARD_TRANSFER
         ) {
           await firstValueFrom(
-            this.messageBrokerClient.emit('transfer.done', message.payload),
+            this.messageBrokerClient.emit('log.transfered', message.payload),
           );
           await this._outboxService.markProcessed(message.id);
         } else if (message.type === TransferType.DEPOSIT) {
           await firstValueFrom(
-            this.messageBrokerClient.emit('deposit.done', message.payload),
+            this.messageBrokerClient.emit('log.deposit', message.payload),
           );
           await this._outboxService.markProcessed(message.id);
         } else if (message.type === TransferType.GITF) {
           await firstValueFrom(
-            this.messageBrokerClient.emit('gift.done', message.payload),
+            this.messageBrokerClient.emit('log.gift', message.payload),
           );
           await this._outboxService.markProcessed(message.id);
         }

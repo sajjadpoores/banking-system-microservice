@@ -13,7 +13,7 @@ import { ConfigService } from '@nestjs/config';
           useFactory: async (configService: ConfigService) =>
             new RabbitMqClientService(
               configService,
-              'transfer_queue',
+              'report_queue',
             ).createClientOptions(),
           inject: [ConfigService],
           name: 'report_broker',

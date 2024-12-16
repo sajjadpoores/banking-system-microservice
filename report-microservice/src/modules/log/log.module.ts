@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { TransferLogService } from './transfer-log.service';
-import { TransferLogController } from './transfer-log.controller';
+import { LogService } from './log.service';
+import { logController } from './log.controller';
 import { TransferLogRepository } from 'src/shared/repository/transfer-log.repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
@@ -14,7 +14,7 @@ import {
       { name: TransferLog.name, schema: TransferLogSchema },
     ]),
   ],
-  providers: [TransferLogRepository, TransferLogService],
-  controllers: [TransferLogController],
+  providers: [TransferLogRepository, LogService],
+  controllers: [logController],
 })
-export class TransferLogModule {}
+export class logModule {}
