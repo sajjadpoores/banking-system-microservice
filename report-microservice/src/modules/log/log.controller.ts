@@ -1,31 +1,31 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { TransferLogService } from './transfer-log.service';
+import { LogService as logService } from './log.service';
 import { TransferDoneEventPayloadDto } from './dto/transfer-done-event-payload.dto';
 import { DepositDoneEventPayloadDto } from './dto/deposit-done-event-payload.dto';
 
-@Controller('transfer-log')
-export class TransferLogController {
-  constructor(private readonly _transferLogService: TransferLogService) {}
+@Controller('log')
+export class logController {
+  constructor(private readonly _logService: logService) {}
 
-  @MessagePattern('transfer.done')
+  @MessagePattern('log.transfered')
   async transferDone(
     @Payload() payload: TransferDoneEventPayloadDto,
   ): Promise<boolean> {
-    return this._transferLogService.transfer(payload);
+    return this._logService.transfer(payload);
   }
 
-  @MessagePattern('deposit.done')
+  @MessagePattern('log.deposit')
   async depositDone(
     @Payload() payload: DepositDoneEventPayloadDto,
   ): Promise<boolean> {
-    return this._transferLogService.deposit(payload);
+    return this._logService.deposit(payload);
   }
 
-  @MessagePattern('gift.done')
+  @MessagePattern('log.gift')
   async giftDone(
     @Payload() payload: DepositDoneEventPayloadDto,
   ): Promise<boolean> {
-    return this._transferLogService.gift(payload);
+    return this._logService.gift(payload);
   }
 }

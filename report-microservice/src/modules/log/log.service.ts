@@ -5,7 +5,7 @@ import { DepositDoneEventPayloadDto } from './dto/deposit-done-event-payload.dto
 import { GiftDoneEventPayloadDto } from './dto/gift-done-event-payload.dto';
 
 @Injectable()
-export class TransferLogService {
+export class LogService {
   constructor(private readonly _transferLogRepository: TransferLogRepository) {}
 
   async transfer(payload: TransferDoneEventPayloadDto): Promise<boolean> {

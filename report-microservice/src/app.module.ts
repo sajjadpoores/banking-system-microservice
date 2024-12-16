@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { join } from 'path';
 import { MongooseConfigService } from './config/mongoose/mongoose.config';
-import { TransferLogModule } from './modules/transfer-log/transfer-log.module';
+import { logModule } from './modules/transfer-log/log.module';
 import { ReportModule } from './modules/report/report.module';
 
 @Module({
@@ -20,7 +20,7 @@ import { ReportModule } from './modules/report/report.module';
       useClass: MongooseConfigService,
       inject: [ConfigService],
     }),
-    TransferLogModule,
+    logModule,
     ReportModule,
   ],
   controllers: [],
