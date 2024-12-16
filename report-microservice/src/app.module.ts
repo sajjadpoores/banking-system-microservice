@@ -3,8 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { join } from 'path';
 import { MongooseConfigService } from './config/mongoose/mongoose.config';
-import { logModule } from './modules/transfer-log/log.module';
 import { ReportModule } from './modules/report/report.module';
+import { logModule } from './modules/log/log.module';
 
 @Module({
   imports: [
