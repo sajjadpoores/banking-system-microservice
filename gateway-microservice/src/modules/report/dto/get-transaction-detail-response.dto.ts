@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { TransactionStatus } from 'src/shared/enum/transaction-status.enum';
 import { TransferType } from 'src/shared/enum/transfer-type.enum';
 
 export class GetTransactionDetailResponseDto {
@@ -51,4 +52,12 @@ export class GetTransactionDetailResponseDto {
     type: String,
   })
   description: string;
+
+  @ApiProperty({
+    type: String,
+    enum: TransactionStatus,
+    description: 'وضعیت پرداخت',
+    example: TransactionStatus.PENDING,
+  })
+  status: TransactionStatus;
 }

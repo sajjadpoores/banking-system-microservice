@@ -26,7 +26,7 @@ export class OutboxProcessor {
           message.type === TransferType.HARD_TRANSFER
         ) {
           await firstValueFrom(
-            this.messageBrokerClient.emit('log.transfered', message.payload),
+            this.messageBrokerClient.emit('log.transferFinished', message.payload),
           );
           await this._outboxService.markProcessed(message.id);
         } else if (message.type === TransferType.DEPOSIT) {

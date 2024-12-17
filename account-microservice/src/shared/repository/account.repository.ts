@@ -7,6 +7,7 @@ import { OutboxEntity } from '../entity/outbox.entity';
 import { DepositBodyDto } from 'src/modules/account/dto/deposit-body.dto';
 import { DepositResponseDto } from 'src/modules/account/dto/deposit-response.dto';
 import { CreateAccountBodyDto } from 'src/modules/account/dto/create-account-body.dto';
+import { TransactionStatus } from '../enum/transaction-status.enum';
 
 export class AccountRepository extends Repository<AccountEntity> {
   constructor(@InjectDataSource() private dataSource: DataSource) {
@@ -41,6 +42,7 @@ export class AccountRepository extends Repository<AccountEntity> {
           amount: initialGiftAmount,
           depositDate: new Date(),
           type: TransferType.GITF,
+          status: TransactionStatus.DONE,
         },
       });
       await manager.save(outbox);
@@ -52,152 +54,190 @@ export class AccountRepository extends Repository<AccountEntity> {
   }
 
   async easyTransfer(payload: TransferBodyDto) {
-    let transactionNumber: string;
     let sourceAccount: AccountEntity;
-    await this.dataSource.transaction(async (manager) => {
-      sourceAccount = await manager.findOne(AccountEntity, {
-        where: { accountNumber: payload.sourceAccountNumber },
-        lock: { mode: 'pessimistic_write' },
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        sourceAccount = await manager.findOne(AccountEntity, {
+          where: { accountNumber: payload.sourceAccountNumber },
+          lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!sourceAccount) {
+          throw new Error('Source account not found.');
+        }
+
+        if (sourceAccount.balance < payload.amount) {
+          throw new Error('Insufficient balance in source account.');
+        }
+
+        const destinationAccount = await manager.findOne(AccountEntity, {
+          where: { accountNumber: payload.destinationAccountNumber },
+          lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!destinationAccount) {
+          throw new Error('Destination account not found.');
+        }
+
+        sourceAccount.balance -= payload.amount;
+        destinationAccount.balance += payload.amount;
+
+        await manager.save(sourceAccount);
+        await manager.save(destinationAccount);
+
+        const outbox = manager.create(OutboxEntity, {
+          aggregateId: payload.transactionNumber,
+          type: TransferType.TRANSFER,
+          payload: {
+            transactionNumber: payload.transactionNumber,
+            amount: payload.amount,
+            description: payload.description,
+            destinationAccountNumber: payload.destinationAccountNumber,
+            destinationBalance: destinationAccount.balance,
+            sourceAccountNumber: payload.sourceAccountNumber,
+            sourceBalance: sourceAccount.balance,
+            destinationUserId: destinationAccount.userId,
+            sourceUserId: sourceAccount.userId,
+            transferDate: new Date(),
+            type: TransferType.TRANSFER,
+            status: TransactionStatus.DONE,
+          },
+        });
+
+        await manager.save(outbox);
       });
 
-      if (!sourceAccount) {
-        throw new Error('Source account not found.');
-      }
-
-      if (sourceAccount.balance < payload.amount) {
-        throw new Error('Insufficient balance in source account.');
-      }
-
-      const destinationAccount = await manager.findOne(AccountEntity, {
-        where: { accountNumber: payload.destinationAccountNumber },
-        lock: { mode: 'pessimistic_write' },
-      });
-
-      if (!destinationAccount) {
-        throw new Error('Destination account not found.');
-      }
-
-      sourceAccount.balance -= payload.amount;
-      destinationAccount.balance += payload.amount;
-
-      await manager.save(sourceAccount);
-      await manager.save(destinationAccount);
-
-      const transferNumberQueryResult = await manager.query(
-        "SELECT nextval('transaction_number_seq')",
-      );
-
-      transactionNumber = transferNumberQueryResult[0].nextval.toString();
-
-      const outbox = manager.create(OutboxEntity, {
-        aggregateId: transactionNumber,
+      return {
+        transactionNumber: payload.transactionNumber,
+        balance: sourceAccount.balance,
+      };
+    } catch (error) {
+      const outbox = this.dataSource.getRepository(OutboxEntity).create({
+        aggregateId: payload.transactionNumber,
         type: TransferType.TRANSFER,
         payload: {
-          transactionNumber,
+          transactionNumber: payload.transactionNumber,
           amount: payload.amount,
           description: payload.description,
           destinationAccountNumber: payload.destinationAccountNumber,
-          destinationBalance: destinationAccount.balance,
+          destinationBalance: 0,
           sourceAccountNumber: payload.sourceAccountNumber,
-          sourceBalance: sourceAccount.balance,
-          destinationUserId: destinationAccount.userId,
-          sourceUserId: sourceAccount.userId,
+          sourceBalance: 0,
+          destinationUserId: 0,
+          sourceUserId: 0,
           transferDate: new Date(),
           type: TransferType.TRANSFER,
+          status: TransactionStatus.FAILED,
         },
       });
 
-      await manager.save(outbox);
-    });
+      await this.dataSource.getRepository(OutboxEntity).save(outbox);
 
-    return {
-      transactionNumber,
-      balance: sourceAccount.balance,
-    };
+      throw error;
+    }
   }
 
   async hardTransfer(payload: TransferBodyDto) {
     let sourceAccount: AccountEntity;
-    let transactionNumber: string;
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        sourceAccount = await manager.findOne(AccountEntity, {
+          where: { accountNumber: payload.sourceAccountNumber },
+          lock: { mode: 'pessimistic_write' },
+        });
 
-    await this.dataSource.transaction(async (manager) => {
-      sourceAccount = await manager.findOne(AccountEntity, {
-        where: { accountNumber: payload.sourceAccountNumber },
-        lock: { mode: 'pessimistic_write' },
-      });
-
-      if (!sourceAccount) {
-        throw new Error('Source account not found.');
-      }
-
-      if (sourceAccount.balance < payload.amount) {
-        throw new Error('Insufficient balance in source account.');
-      }
-
-      if (sourceAccount.lastHardTransferDate) {
-        const fourHoursInMs = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
-        const currentTime = new Date();
-        const lastTransferTime = new Date(sourceAccount.lastHardTransferDate);
-        const timeDifference =
-          currentTime.getTime() - lastTransferTime.getTime();
-
-        if (timeDifference < fourHoursInMs) {
-          const hoursLeft = (
-            (fourHoursInMs - timeDifference) /
-            (1000 * 60 * 60)
-          ).toFixed(2);
-          throw new Error(
-            `Hard transfer can only be performed once every 4 hours. Please wait ${hoursLeft} more hours.`,
-          );
+        if (!sourceAccount) {
+          throw new Error('Source account not found.');
         }
-      }
 
-      const destinationAccount = await manager.findOne(AccountEntity, {
-        where: { accountNumber: payload.destinationAccountNumber },
-        lock: { mode: 'pessimistic_write' },
+        if (sourceAccount.balance < payload.amount) {
+          throw new Error('Insufficient balance in source account.');
+        }
+
+        if (sourceAccount.lastHardTransferDate) {
+          const fourHoursInMs = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+          const currentTime = new Date();
+          const lastTransferTime = new Date(sourceAccount.lastHardTransferDate);
+          const timeDifference =
+            currentTime.getTime() - lastTransferTime.getTime();
+
+          if (timeDifference < fourHoursInMs) {
+            const hoursLeft = (
+              (fourHoursInMs - timeDifference) /
+              (1000 * 60 * 60)
+            ).toFixed(2);
+            throw new Error(
+              `Hard transfer can only be performed once every 4 hours. Please wait ${hoursLeft} more hours.`,
+            );
+          }
+        }
+
+        const destinationAccount = await manager.findOne(AccountEntity, {
+          where: { accountNumber: payload.destinationAccountNumber },
+          lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!destinationAccount) {
+          throw new Error('Destination account not found.');
+        }
+
+        sourceAccount.balance -= payload.amount;
+        sourceAccount.lastHardTransferDate = new Date();
+        destinationAccount.balance += payload.amount;
+
+        await manager.save(sourceAccount);
+        await manager.save(destinationAccount);
+
+        const outbox = manager.create(OutboxEntity, {
+          aggregateId: payload.transactionNumber,
+          type: TransferType.HARD_TRANSFER,
+          payload: {
+            transactionNumber: payload.transactionNumber,
+            amount: payload.amount,
+            description: payload.description,
+            destinationAccountNumber: payload.destinationAccountNumber,
+            destinationBalance: destinationAccount.balance,
+            sourceAccountNumber: payload.sourceAccountNumber,
+            sourceBalance: sourceAccount.balance,
+            destinationUserId: destinationAccount.userId,
+            sourceUserId: sourceAccount.userId,
+            transferDate: new Date(),
+            type: TransferType.HARD_TRANSFER,
+            status: TransactionStatus.DONE,
+          },
+        });
+
+        await manager.save(outbox);
       });
 
-      if (!destinationAccount) {
-        throw new Error('Destination account not found.');
-      }
-
-      sourceAccount.balance -= payload.amount;
-      sourceAccount.lastHardTransferDate = new Date();
-      destinationAccount.balance += payload.amount;
-
-      await manager.save(sourceAccount);
-      await manager.save(destinationAccount);
-
-      const transferNumberQueryResult = await manager.query(
-        "SELECT nextval('transaction_number_seq')",
-      );
-      transactionNumber = transferNumberQueryResult[0].nextval.toString();
-
-      const outbox = manager.create(OutboxEntity, {
-        aggregateId: transactionNumber,
+      return {
+        transactionNumber: payload.transactionNumber,
+        balance: sourceAccount.balance,
+      };
+    } catch (error) {
+      const outbox = this.dataSource.getRepository(OutboxEntity).create({
+        aggregateId: payload.transactionNumber,
         type: TransferType.HARD_TRANSFER,
         payload: {
-          transactionNumber,
+          transactionNumber: payload.transactionNumber,
           amount: payload.amount,
           description: payload.description,
           destinationAccountNumber: payload.destinationAccountNumber,
-          destinationBalance: destinationAccount.balance,
+          destinationBalance: 0,
           sourceAccountNumber: payload.sourceAccountNumber,
-          sourceBalance: sourceAccount.balance,
-          destinationUserId: destinationAccount.userId,
-          sourceUserId: sourceAccount.userId,
+          sourceBalance: 0,
+          destinationUserId: 0,
+          sourceUserId: 0,
           transferDate: new Date(),
           type: TransferType.HARD_TRANSFER,
+          status: TransactionStatus.FAILED,
         },
       });
 
-      await manager.save(outbox);
-    });
+      await this.dataSource.getRepository(OutboxEntity).save(outbox);
 
-    return {
-      transactionNumber,
-      balance: sourceAccount.balance,
-    };
+      throw error;
+    }
   }
 
   async deposit(
@@ -234,7 +274,6 @@ export class AccountRepository extends Repository<AccountEntity> {
         this._isSameDay(account.lastDepositDate, todayDate)
       ) {
         const newTodayDepositSum = account.todayDepositSum + payload.amount;
-        console.log(newTodayDepositSum);
         if (newTodayDepositSum > dailyLimit) {
           throw new Error(`Daily deposit limit of ${dailyLimit} exceeded.`);
         }
@@ -263,6 +302,7 @@ export class AccountRepository extends Repository<AccountEntity> {
           amount: payload.amount,
           depositDate: new Date(),
           type: TransferType.DEPOSIT,
+          status: TransactionStatus.DONE,
         },
       });
 

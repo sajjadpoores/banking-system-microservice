@@ -1,3 +1,4 @@
+import { TransactionStatus } from 'src/shared/enum/transaction-status.enum';
 import { TurnoverType } from 'src/shared/enum/turnover-type.enum';
 
 export class GetTurnoverResponseDto {
@@ -9,4 +10,5 @@ export class GetTurnoverResponseDto {
   balance: number;
   transactionDate: string;
   description: string;
+  status: TransactionStatus;
 }

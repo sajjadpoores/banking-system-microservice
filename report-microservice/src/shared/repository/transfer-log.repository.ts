@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { GetTurnoverQueryDto } from 'src/modules/report/dto/get-turnover.dto';
 import { TurnoverType } from '../enum/turnover-type.enum';
+import { TransactionStatus } from '../enum/transaction-status.enum';
 
 @Injectable()
 export class TransferLogRepository extends BaseRepository<TransferLogDocument> {
@@ -18,7 +19,9 @@ export class TransferLogRepository extends BaseRepository<TransferLogDocument> {
   }
 
   async getTurnover(filters: GetTurnoverQueryDto): Promise<TransferLog[]> {
-    const query: any = {};
+    const query: any = {
+      status: TransactionStatus.DONE,
+    };
 
     if (filters.type === TurnoverType.DEPOSIT) {
       query.destinationAccount = filters.accountNumber;
