@@ -8,8 +8,8 @@ export type TransferLogDocument = HydratedDocument<TransferLog>;
 
 @Schema({ timestamps: true })
 export class TransferLog extends BaseCustomSchema {
-  @Prop({ type: Number, required: false })
-  transferNumber: number;
+  @Prop({ type: String, required: false })
+  transferNumber: string;
 
   @Prop({ type: Number, required: true })
   destinationAccount: number;
@@ -20,13 +20,13 @@ export class TransferLog extends BaseCustomSchema {
   @Prop({ type: String, required: false })
   sourceUserId: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: false })
   destinationUserId: string;
 
   @Prop({ type: Number, required: false })
   sourceBalance: number;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, required: false })
   destinationBalance: number;
 
   @Prop({ type: Number, required: true })

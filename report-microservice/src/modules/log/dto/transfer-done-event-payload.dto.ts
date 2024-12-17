@@ -2,7 +2,7 @@ import { TransactionStatus } from 'src/shared/enum/transaction-status.enum';
 import { TransferType } from 'src/shared/enum/transfer-type.enum';
 
 export class TransferDoneEventPayloadDto {
-  transactionNumber: number;
+  transactionNumber: string;
   type: TransferType;
   destinationAccountNumber: number;
   destinationUserId: string;

@@ -3,11 +3,10 @@ import { ClientProxy } from '@nestjs/microservices';
 import { OutboxService } from './outbox.service';
 import { Transaction } from 'src/shared/schema/transaction.schema';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { firstValueFrom } from 'rxjs';
 
 export class OutboxProcessor {
   constructor(
-    @Inject('transaction_broker')
+    @Inject('account_broker')
     private readonly messageBrokerClient: ClientProxy,
     private readonly _outboxService: OutboxService,
   ) {}
@@ -19,10 +18,7 @@ export class OutboxProcessor {
 
     for (const message of messages) {
       try {
-        console.log(message);
-        await firstValueFrom(
-          this.messageBrokerClient.emit('account.transfer', message),
-        );
+        await this.messageBrokerClient.emit('account.transfer', message);
         await this._outboxService.markProcessed(message._id);
       } catch (error) {
         console.log(error);

@@ -22,7 +22,7 @@ import { RabbitMqClientService } from 'src/config/mongoose/rabbitmq/rabbitmq-cli
               'account_queue',
             ).createClientOptions(),
           inject: [ConfigService],
-          name: 'transaction_broker',
+          name: 'account_broker',
         },
       ],
     }),
