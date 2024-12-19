@@ -50,6 +50,57 @@ Ensure you have the following installed on your machine:
    cp ./transaction-microservice/env/production.env.example ./transaction-microservice/env/production.env
    ```
 
+#### 3. Create Databases Manually
+
+Before running the application, you need to create the required databases manually in PostgreSQL and MongoDB.
+
+**PostgreSQL**
+
+1. **Access PostgreSQL Shell**
+
+   ```bash
+   docker exec -it banking-system-microservice-postgres-1 psql -U postgres
+   ```
+
+2. **Create Databases**
+
+   Within the PostgreSQL shell, execute the following commands:
+
+   ```sql
+   CREATE DATABASE user;
+   CREATE DATABASE account;
+   ```
+
+   Exit the PostgreSQL shell:
+
+   ```sql
+   \q
+   ```
+
+**MongoDB**
+
+MongoDB typically creates databases automatically when a connection is made. However, if you prefer to create them manually:
+
+1. **Access MongoDB Shell**
+
+   ```bash
+   docker exec -it banking-system-microservice-mongo-1 mongo
+   ```
+
+2. **Create Databases**
+
+   Within the MongoDB shell, execute the following commands:
+
+   ```javascript
+   use report
+   use transaction
+   ```
+
+   Exit the MongoDB shell:
+
+   ```javascript
+   exit
+   ```
 ### Running the Application
 
 **Build and Start Services**
