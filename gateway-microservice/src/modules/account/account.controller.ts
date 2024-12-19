@@ -1,9 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+// src/account/account.controller.ts
+import { Controller, Post, Body } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiExtraModels,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { AccountService } from './account.service';
 import { ResponseModel } from 'src/shared/dto/response-model.dto';
@@ -18,9 +21,16 @@ import { IUser } from 'src/shared/interface/user.interface';
 import { withdrawResponseDto } from './dto/withdraw-response';
 import { withdrawBodyDto } from './dto/withdraw-body.dto';
 
-@Controller('account')
 @ApiTags('Account')
 @ApiBearerAuth()
+@ApiExtraModels(
+  ResponseModel,
+  CreateAccountReponseDto,
+  DepositResponseDto,
+  withdrawResponseDto,
+  GetBalanceResponseDto,
+)
+@Controller('account')
 export class AccountController {
   constructor(private readonly _accountService: AccountService) {}
 
@@ -29,7 +39,16 @@ export class AccountController {
   @ApiOkResponse({
     status: 201,
     description: 'Account created successfully.',
-    type: ResponseModel<CreateAccountReponseDto>,
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseModel) },
+        {
+          properties: {
+            data: { $ref: getSchemaPath(CreateAccountReponseDto) },
+          },
+        },
+      ],
+    },
   })
   async createAccount(
     @User() user: IUser,
@@ -43,7 +62,16 @@ export class AccountController {
   @ApiOkResponse({
     status: 200,
     description: 'Account balance increased successfully.',
-    type: ResponseModel<DepositResponseDto>,
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseModel) },
+        {
+          properties: {
+            data: { $ref: getSchemaPath(DepositResponseDto) },
+          },
+        },
+      ],
+    },
   })
   async deposit(
     @Body() payload: DepositBodyDto,
@@ -57,7 +85,16 @@ export class AccountController {
   @ApiOkResponse({
     status: 200,
     description: 'Withdrawal from account completed successfully.',
-    type: ResponseModel<withdrawResponseDto>,
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseModel) },
+        {
+          properties: {
+            data: { $ref: getSchemaPath(withdrawResponseDto) },
+          },
+        },
+      ],
+    },
   })
   async withdraw(
     @Body() payload: withdrawBodyDto,
@@ -71,7 +108,16 @@ export class AccountController {
   @ApiOkResponse({
     status: 200,
     description: 'Account balance retrieved successfully.',
-    type: ResponseModel<GetBalanceResponseDto>,
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseModel) },
+        {
+          properties: {
+            data: { $ref: getSchemaPath(GetBalanceResponseDto) },
+          },
+        },
+      ],
+    },
   })
   async getBalance(
     @Body() payload: GetBalanceBodyDto,

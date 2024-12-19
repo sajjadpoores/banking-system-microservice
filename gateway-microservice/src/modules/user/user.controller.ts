@@ -1,17 +1,24 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user-body.dto';
 import { ResponseModel } from 'src/shared/dto/response-model.dto';
-import { CreateUserResponseDto } from './dto/craete-user-response.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { LoginBodyDto } from './dto/login-body.dto';
-import { RefreshTokenBodyDto } from './dto/refresh-token-body';
 import { Public } from 'src/shared/decorator/is-public.decorator';
+import { CreateUserResponseDto } from './dto/craete-user-response.dto';
+import { RefreshTokenBodyDto } from './dto/refresh-token-body';
 
-@Controller('user')
 @ApiTags('User')
+@Controller('user')
 @Public()
+@ApiExtraModels(ResponseModel, CreateUserResponseDto, LoginResponseDto) // Inform Swagger about these models
 export class UserController {
   constructor(private readonly _userService: UserService) {}
 
@@ -20,7 +27,16 @@ export class UserController {
   @ApiOkResponse({
     status: 201,
     description: 'User registered successfully.',
-    type: ResponseModel<CreateUserResponseDto>,
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseModel) },
+        {
+          properties: {
+            data: { $ref: getSchemaPath(CreateUserResponseDto) }, // Reference the CreateUserResponseDto
+          },
+        },
+      ],
+    },
   })
   async createUser(
     @Body() payload: CreateUserDto,
@@ -33,7 +49,16 @@ export class UserController {
   @ApiOkResponse({
     status: 200,
     description: 'User logged in successfully.',
-    type: ResponseModel<LoginResponseDto>,
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseModel) },
+        {
+          properties: {
+            data: { $ref: getSchemaPath(LoginResponseDto) }, // Reference the LoginResponseDto
+          },
+        },
+      ],
+    },
   })
   async login(
     @Body() payload: LoginBodyDto,
@@ -46,7 +71,16 @@ export class UserController {
   @ApiOkResponse({
     status: 200,
     description: 'Token refreshed successfully.',
-    type: ResponseModel<LoginResponseDto>,
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseModel) },
+        {
+          properties: {
+            data: { $ref: getSchemaPath(LoginResponseDto) }, // Reference the LoginResponseDto
+          },
+        },
+      ],
+    },
   })
   async refreshToken(
     @Body() body: RefreshTokenBodyDto,

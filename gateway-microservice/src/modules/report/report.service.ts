@@ -16,9 +16,9 @@ export class ReportService {
 
   async getAccountTurnover(
     filters: GetTurnoverQueryDto,
-  ): Promise<ResponseModel<GetTurnoverResponseDto>> {
+  ): Promise<ResponseModel<GetTurnoverResponseDto[]>> {
     const response = await firstValueFrom<
-      ResponseModel<GetTurnoverResponseDto>
+      ResponseModel<GetTurnoverResponseDto[]>
     >(this._rabbitmqClient.send('report.turnover', filters));
 
     return response;
