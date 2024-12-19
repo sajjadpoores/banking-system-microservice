@@ -25,10 +25,10 @@ export class AccountController {
   constructor(private readonly _accountService: AccountService) {}
 
   @Post('')
-  @ApiOperation({ summary: 'ایجاد یک حساب جدید' })
+  @ApiOperation({ summary: 'Create a new account' })
   @ApiOkResponse({
     status: 201,
-    description: 'حساب ایجاد شد.',
+    description: 'Account created successfully.',
     type: ResponseModel<CreateAccountReponseDto>,
   })
   async createAccount(
@@ -39,10 +39,10 @@ export class AccountController {
 
   @Post('deposit')
   @RequireAccountAccess('accountNumber')
-  @ApiOperation({ summary: 'افزایش موجودی حساب' })
+  @ApiOperation({ summary: 'Increase account balance' })
   @ApiOkResponse({
     status: 200,
-    description: 'افزایش موجودی حساب انجام شد.',
+    description: 'Account balance increased successfully.',
     type: ResponseModel<DepositResponseDto>,
   })
   async deposit(
@@ -53,10 +53,10 @@ export class AccountController {
 
   @Post('withdraw')
   @RequireAccountAccess('accountNumber')
-  @ApiOperation({ summary: 'برداشت از حساب' })
+  @ApiOperation({ summary: 'Withdraw from account' })
   @ApiOkResponse({
     status: 200,
-    description: 'برداشت از حساب انجام شد.',
+    description: 'Withdrawal from account completed successfully.',
     type: ResponseModel<withdrawResponseDto>,
   })
   async withdraw(
@@ -67,10 +67,10 @@ export class AccountController {
 
   @Post('balance')
   @RequireAccountAccess('accountNumber')
-  @ApiOperation({ summary: 'دریافت موجودی حساب' })
+  @ApiOperation({ summary: 'Get account balance' })
   @ApiOkResponse({
     status: 200,
-    description: 'موجودی حساب دریافت شد.',
+    description: 'Account balance retrieved successfully.',
     type: ResponseModel<GetBalanceResponseDto>,
   })
   async getBalance(

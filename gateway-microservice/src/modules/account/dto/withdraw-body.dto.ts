@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class withdrawBodyDto {
   @ApiProperty({
-    description: 'شناسه حساب',
+    description: 'Account identifier',
     example: 1000001,
     type: Number,
   })
@@ -13,7 +13,7 @@ export class withdrawBodyDto {
 
   @ApiProperty({
     type: Number,
-    description: 'مبلغ برداشتی',
+    description: 'Withdrawal amount',
     example: 100000,
   })
   @IsNotEmpty()
