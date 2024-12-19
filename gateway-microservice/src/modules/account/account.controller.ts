@@ -6,7 +6,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AccountService } from './account.service';
-import { CreateAccountBodyDto } from './dto/create-account-body.dto';
 import { ResponseModel } from 'src/shared/dto/response-model.dto';
 import { CreateAccountReponseDto } from './dto/create-account-response.dto';
 import { DepositBodyDto } from './dto/deposit-body.dto';
@@ -14,6 +13,8 @@ import { DepositResponseDto } from './dto/deposit-response.dto';
 import { GetBalanceResponseDto } from './dto/get-balance-response.dto';
 import { GetBalanceBodyDto } from './dto/get-balance-body.dto';
 import { RequireAccountAccess } from 'src/shared/decorator/require-account-access.decorator';
+import { User } from 'src/shared/decorator/user.decorator';
+import { IUser } from 'src/shared/interface/user.interface';
 
 @Controller('account')
 @ApiTags('Account')
@@ -29,9 +30,9 @@ export class AccountController {
     type: ResponseModel<CreateAccountReponseDto>,
   })
   async createAccount(
-    @Body() payload: CreateAccountBodyDto,
+    @User() user: IUser,
   ): Promise<ResponseModel<CreateAccountReponseDto>> {
-    return this._accountService.createAccount(payload);
+    return this._accountService.createAccount(user);
   }
 
   @Post('deposit')
