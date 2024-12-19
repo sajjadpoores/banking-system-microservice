@@ -1,0 +1,160 @@
+version: '3.8'
+
+services:
+  # RabbitMQ Service
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - app-network
+
+  # Redis Service
+  redis:
+    image: redis:6
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+
+  # PostgreSQL Service
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  # MongoDB Service
+  mongo:
+    image: mongo:4.4
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+
+  # Gateway Microservice
+  gateway-microservice:
+    build:
+      context: ./gateway-microservice
+      dockerfile: Dockerfile
+    env_file:
+      - ./gateway-microservice/env/production.env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      RABBITMQ_URL: amqp://rabbitmq:5672
+      JWT_SECRET: your_jwt_secret_key
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rabbitmq
+      - redis
+    networks:
+      - app-network
+
+  # User Microservice
+  user-microservice:
+    build:
+      context: ./user-microservice
+      dockerfile: Dockerfile
+    env_file:
+      - ./user-microservice/env/production.env
+    environment:
+      RABBITMQ_URL: amqp://rabbitmq:5672
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: user
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
+      JWT_SECRET: your_jwt_secret_key
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - app-network
+
+  # Account Microservice
+  account-microservice:
+    build:
+      context: ./account-microservice
+      dockerfile: Dockerfile
+    env_file:
+      - ./account-microservice/env/production.env
+    environment:
+      RABBITMQ_URL: amqp://rabbitmq:5672
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: account
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
+      EASY_TRANSFER_LIMIT: 10000000
+      INITIAL_ACCOUNT_GIFT: 20000000
+      DAILY_DEPOSIT_LIMIT: 10000000
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - app-network
+
+  # Report Microservice
+  report-microservice:
+    build:
+      context: ./report-microservice
+      dockerfile: Dockerfile
+    env_file:
+      - ./report-microservice/env/production.env
+    environment:
+      RABBITMQ_URL: amqp://rabbitmq:5672
+      MONGODB_URI: mongodb://mongo:27017/report
+    depends_on:
+      - rabbitmq
+      - mongo
+    networks:
+      - app-network
+
+  # Transaction Microservice
+  transaction-microservice:
+    build:
+      context: ./transaction-microservice
+      dockerfile: Dockerfile
+    env_file:
+      - ./transaction-microservice/env/production.env
+    environment:
+      RABBITMQ_URL: amqp://rabbitmq:5672
+      MONGODB_URI: mongodb://mongo:27017/transaction
+    depends_on:
+      - rabbitmq
+      - mongo
+    networks:
+      - app-network
+
+# Volumes for persistent storage
+volumes:
+  rabbitmq-data:
+  redis-data:
+  postgres-data:
+  mongo-data:
+
+# Custom Network
+networks:
+  app-network:
+    driver: bridge

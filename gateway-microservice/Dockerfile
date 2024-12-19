@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install -P --verbose
+RUN npm install --verbose
 
 COPY . .
 

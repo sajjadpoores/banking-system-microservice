@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user-body.dto';
 import { UserRepository } from 'src/shared/repository/account.repository';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { ResponseModel } from 'src/shared/dto/response-model.dto';
 import { ReponseStatus } from 'src/shared/enum/response-status.enum';
 import { CreateUserResponseDto } from './dto/craete-user-response.dto';
