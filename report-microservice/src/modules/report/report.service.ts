@@ -7,6 +7,8 @@ import { ReponseStatus } from 'src/shared/enum/response-status.enum';
 import { TurnoverType } from 'src/shared/enum/turnover-type.enum';
 import { GetTransactionDetailQueryDto } from './dto/get-transaction-detail-query.dto';
 import { GetTransactionDetailResponseDto } from './dto/get-transaction-detail-response.dto';
+import { TransferLog } from 'src/shared/schema/transfer-log.schema';
+import { TransferType } from 'src/shared/enum/transfer-type.enum';
 
 @Injectable()
 export class ReportService {
@@ -34,10 +36,7 @@ export class ReportService {
             : txn.sourceBalance,
         description: txn.description,
         transactionDate: txn.date.toISOString(),
-        type:
-          payload.accountNumber === txn.destinationAccount
-            ? TurnoverType.DEPOSIT
-            : TurnoverType.WITHDRAWAL,
+        type: this._determineTurnoverType(txn, payload.accountNumber),
         destinationAccountNumber: txn.destinationAccount,
         sourceAccoutNumber: txn.sourceAccount,
         transactionNumber: `${txn.transferNumber}`,
@@ -50,6 +49,25 @@ export class ReportService {
       message: 'تراکنش‌ها با موفقیت دریافت شدند.',
       data: formattedTransactions,
     };
+  }
+
+  private _determineTurnoverType(tnx: TransferLog, accountNumber: number) {
+    if (tnx.type === TransferType.DEPOSIT) {
+      return TurnoverType.DEPOSIT;
+    } else if (tnx.type === TransferType.WITHDRAWAL) {
+      return TurnoverType.WITHDRAWAL;
+    } else if (tnx.type === TransferType.GIFT) {
+      return TurnoverType.DEPOSIT;
+    } else if (
+      tnx.type === TransferType.TRANSFER ||
+      tnx.type === TransferType.HARD_TRANSFER
+    ) {
+      if (accountNumber === tnx.destinationAccount) {
+        return TurnoverType.DEPOSIT;
+      } else {
+        return TurnoverType.WITHDRAWAL;
+      }
+    }
   }
 
   async getTransactionDetail(

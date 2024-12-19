@@ -37,6 +37,11 @@ export class OutboxProcessor {
             this.messageBrokerClient.emit('log.deposit', message.payload),
           );
           await this._outboxService.markProcessed(message.id);
+        } else if (message.type === TransferType.WITHDRAWAL) {
+          await firstValueFrom(
+            this.messageBrokerClient.emit('log.withdraw', message.payload),
+          );
+          await this._outboxService.markProcessed(message.id);
         } else if (message.type === TransferType.GITF) {
           await firstValueFrom(
             this.messageBrokerClient.emit('log.gift', message.payload),

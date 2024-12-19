@@ -6,6 +6,7 @@ import { GiftDoneEventPayloadDto } from './dto/gift-done-event-payload.dto';
 import { TransferStartedPayloadDto } from './dto/transfer-started-payload.dto';
 import { TransferType } from 'src/shared/enum/transfer-type.enum';
 import { TransactionStatus } from 'src/shared/enum/transaction-status.enum';
+import { WithdrawDoneEventPayloadDto } from './dto/withdraw-done-event-payload.dto';
 
 @Injectable()
 export class LogService {
@@ -77,6 +78,29 @@ export class LogService {
   }
 
   async deposit(payload: DepositDoneEventPayloadDto): Promise<boolean> {
+    try {
+      await this._transferLogRepository.create({
+        transferNumber: payload.transactionNumber,
+        sourceAccount: null,
+        sourceUserId: null,
+        sourceBalance: null,
+        destinationAccount: payload.destinationAccountNumber,
+        destinationUserId: payload.destinationUserId,
+        destinationBalance: payload.destinationBalance,
+        amount: payload.amount,
+        type: payload.type,
+        date: new Date(payload.depositDate),
+        status: payload.status,
+      });
+
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
+  async withdraw(payload: WithdrawDoneEventPayloadDto): Promise<boolean> {
     try {
       await this._transferLogRepository.create({
         transferNumber: payload.transactionNumber,

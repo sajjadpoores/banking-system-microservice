@@ -10,6 +10,8 @@ import { DepositBodyDto } from './dto/deposit-body.dto';
 import { DepositResponseDto } from './dto/deposit-response.dto';
 import { GetBalanceResponseDto } from './dto/get-balance-response.dto';
 import { GetBalanceBodyDto } from './dto/get-balance-body.dto';
+import { withdrawResponseDto } from './dto/withdraw-response.dto';
+import { withdrawBodyDto } from './dto/withdraw-body.dto';
 
 @Controller('account')
 export class AccountController {
@@ -34,6 +36,13 @@ export class AccountController {
     @Payload() payload: DepositBodyDto,
   ): Promise<ResponseModel<DepositResponseDto>> {
     return this._accountService.deposit(payload);
+  }
+
+  @MessagePattern('account.withdraw')
+  async handleWithdraw(
+    @Payload() payload: withdrawBodyDto,
+  ): Promise<ResponseModel<withdrawResponseDto>> {
+    return this._accountService.withdraw(payload);
   }
 
   @MessagePattern('account.getBalance')
