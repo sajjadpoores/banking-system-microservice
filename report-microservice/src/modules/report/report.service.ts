@@ -86,6 +86,16 @@ export class ReportService {
       };
     }
 
+    if (
+      payload.userId !== transaction.sourceUserId &&
+      payload.userId !== transaction.destinationUserId
+    ) {
+      return {
+        status: ReponseStatus.FAILED,
+        message: 'You do not have permission to get transaction detail',
+        data: null,
+      };
+    }
     const response: GetTransactionDetailResponseDto = {
       transactionNumber: `${transaction.transferNumber}`,
       sourceAccountNumber: transaction.sourceAccount,

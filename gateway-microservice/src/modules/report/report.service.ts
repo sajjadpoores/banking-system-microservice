@@ -26,10 +26,16 @@ export class ReportService {
 
   async getTransactionDetail(
     query: GetTransactionDetailQueryDto,
+    userId: string,
   ): Promise<ResponseModel<GetTransactionDetailResponseDto>> {
     const response = await firstValueFrom<
       ResponseModel<GetTransactionDetailResponseDto>
-    >(this._rabbitmqClient.send('report.transactionDetail', query));
+    >(
+      this._rabbitmqClient.send('report.transactionDetail', {
+        ...query,
+        userId,
+      }),
+    );
 
     return response;
   }

@@ -12,6 +12,8 @@ import { GetTurnoverQueryDto } from './dto/get-turnover-query.dto';
 import { GetTransactionDetailResponseDto } from './dto/get-transaction-detail-response.dto';
 import { GetTransactionDetailQueryDto } from './dto/get-transaction-detail-query.dto';
 import { RequireAccountAccess } from 'src/shared/decorator/require-account-access.decorator';
+import { User } from 'src/shared/decorator/user.decorator';
+import { IUser } from 'src/shared/interface/user.interface';
 
 @ApiTags('Report')
 @Controller('report')
@@ -42,7 +44,8 @@ export class ReportController {
   })
   async getTransactionDetail(
     @Query() query: GetTransactionDetailQueryDto,
+    @User() user: IUser,
   ): Promise<ResponseModel<GetTransactionDetailResponseDto>> {
-    return this._reportService.getTransactionDetail(query);
+    return this._reportService.getTransactionDetail(query, user.userId);
   }
 }
