@@ -1,3 +1,4 @@
+// src/report/report.controller.ts
 import { Controller, Get, Query } from '@nestjs/common';
 import { ReportService } from './report.service';
 import {
@@ -5,6 +6,8 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiExtraModels,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { ResponseModel } from 'src/shared/dto/response-model.dto';
 import { GetTurnoverResponseDto } from './dto/get-turnover-response.dto';
@@ -18,6 +21,11 @@ import { IUser } from 'src/shared/interface/user.interface';
 @ApiTags('Report')
 @Controller('report')
 @ApiBearerAuth()
+@ApiExtraModels(
+  ResponseModel,
+  GetTurnoverResponseDto,
+  GetTransactionDetailResponseDto,
+)
 export class ReportController {
   constructor(private readonly _reportService: ReportService) {}
 
@@ -27,11 +35,23 @@ export class ReportController {
   @ApiOkResponse({
     status: 200,
     description: 'Account turnover retrieved successfully.',
-    type: ResponseModel<GetTurnoverResponseDto>,
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseModel) },
+        {
+          properties: {
+            data: {
+              type: 'array',
+              items: { $ref: getSchemaPath(GetTurnoverResponseDto) },
+            },
+          },
+        },
+      ],
+    },
   })
   async getAccountTurnover(
     @Query() filters: GetTurnoverQueryDto,
-  ): Promise<ResponseModel<GetTurnoverResponseDto>> {
+  ): Promise<ResponseModel<GetTurnoverResponseDto[]>> {
     return this._reportService.getAccountTurnover(filters);
   }
 
@@ -40,7 +60,16 @@ export class ReportController {
   @ApiOkResponse({
     status: 200,
     description: 'Transaction details retrieved successfully.',
-    type: ResponseModel<GetTransactionDetailResponseDto>,
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseModel) },
+        {
+          properties: {
+            data: { $ref: getSchemaPath(GetTransactionDetailResponseDto) },
+          },
+        },
+      ],
+    },
   })
   async getTransactionDetail(
     @Query() query: GetTransactionDetailQueryDto,

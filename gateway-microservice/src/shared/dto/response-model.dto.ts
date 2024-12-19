@@ -2,12 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ReponseStatus } from '../enum/response-status.enum';
 
 export class ResponseModel<T> {
-  @ApiProperty()
+  @ApiProperty({ enum: ReponseStatus, description: 'Status of the response' })
   status: ReponseStatus;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Message providing additional details' })
   message: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Data payload',
+  })
   data: T | T[];
 }

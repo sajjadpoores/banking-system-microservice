@@ -26,7 +26,7 @@ export class BaseCustomEntity {
   deletedAt?: Date;
 
   @Column('bool', {
-    default: false,
+    default: true,
   })
   active: boolean;
 }

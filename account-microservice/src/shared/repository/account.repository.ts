@@ -10,6 +10,9 @@ import { CreateAccountBodyDto } from 'src/modules/account/dto/create-account-bod
 import { TransactionStatus } from '../enum/transaction-status.enum';
 import { withdrawBodyDto } from 'src/modules/account/dto/withdraw-body.dto';
 import { withdrawResponseDto } from 'src/modules/account/dto/withdraw-response.dto';
+import { AccountNotFoundException } from '../error/account-not-found.error';
+import { InsufficientBalanceException } from '../error/insufficient-balance.error';
+import { DailyDepositLimitExceededException } from '../error/daily-deposit-limit.error';
 
 export class AccountRepository extends Repository<AccountEntity> {
   constructor(@InjectDataSource() private dataSource: DataSource) {
@@ -65,11 +68,11 @@ export class AccountRepository extends Repository<AccountEntity> {
         });
 
         if (!sourceAccount) {
-          throw new Error('Source account not found.');
+          throw new AccountNotFoundException(payload.sourceAccountNumber);
         }
 
         if (sourceAccount.balance < payload.amount) {
-          throw new Error('Insufficient balance in source account.');
+          throw new InsufficientBalanceException();
         }
 
         const destinationAccount = await manager.findOne(AccountEntity, {
@@ -78,7 +81,7 @@ export class AccountRepository extends Repository<AccountEntity> {
         });
 
         if (!destinationAccount) {
-          throw new Error('Destination account not found.');
+          throw new AccountNotFoundException(payload.destinationAccountNumber);
         }
 
         sourceAccount.balance -= payload.amount;
@@ -149,11 +152,11 @@ export class AccountRepository extends Repository<AccountEntity> {
         });
 
         if (!sourceAccount) {
-          throw new Error('Source account not found.');
+          throw new AccountNotFoundException(payload.sourceAccountNumber);
         }
 
         if (sourceAccount.balance < payload.amount) {
-          throw new Error('Insufficient balance in source account.');
+          throw new InsufficientBalanceException();
         }
 
         if (sourceAccount.lastHardTransferDate) {
@@ -180,7 +183,7 @@ export class AccountRepository extends Repository<AccountEntity> {
         });
 
         if (!destinationAccount) {
-          throw new Error('Destination account not found.');
+          throw new AccountNotFoundException(payload.destinationAccountNumber);
         }
 
         sourceAccount.balance -= payload.amount;
@@ -256,7 +259,7 @@ export class AccountRepository extends Repository<AccountEntity> {
       });
 
       if (!account) {
-        throw new Error('Account not found.');
+        throw new AccountNotFoundException(payload.accountNumber);
       }
 
       const today = new Date();
@@ -268,7 +271,7 @@ export class AccountRepository extends Repository<AccountEntity> {
 
       // check sum of account today's deposit
       if (payload.amount > dailyLimit) {
-        throw new Error(`Daily deposit limit of ${dailyLimit} exceeded.`);
+        throw new DailyDepositLimitExceededException(dailyLimit);
       }
 
       if (
@@ -277,7 +280,7 @@ export class AccountRepository extends Repository<AccountEntity> {
       ) {
         const newTodayDepositSum = account.todayDepositSum + payload.amount;
         if (newTodayDepositSum > dailyLimit) {
-          throw new Error(`Daily deposit limit of ${dailyLimit} exceeded.`);
+          throw new DailyDepositLimitExceededException(dailyLimit);
         }
         account.todayDepositSum = newTodayDepositSum;
       } else {
@@ -328,11 +331,11 @@ export class AccountRepository extends Repository<AccountEntity> {
       });
 
       if (!account) {
-        throw new Error('Account not found.');
+        throw new AccountNotFoundException(payload.accountNumber);
       }
 
       if (account.balance < payload.amount) {
-        throw new Error('Account balance not sufficient');
+        throw new InsufficientBalanceException();
       }
 
       account.balance -= payload.amount;
