@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class GetBalanceBodyDto {
   @ApiProperty({
-    description: 'شماره حساب',
+    description: 'Account number',
     example: 1000001,
     type: Number,
   })

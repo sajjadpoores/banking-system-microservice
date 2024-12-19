@@ -22,11 +22,11 @@ export class ReportController {
   constructor(private readonly _reportService: ReportService) {}
 
   @Get('turnover')
-  @ApiOperation({ summary: 'دریافت گردش حساب' })
+  @ApiOperation({ summary: 'Get account turnover' })
   @RequireAccountAccess('accountNumber')
   @ApiOkResponse({
     status: 200,
-    description: 'گردش حساب با موفقیت دریافت شد.',
+    description: 'Account turnover retrieved successfully.',
     type: ResponseModel<GetTurnoverResponseDto>,
   })
   async getAccountTurnover(
@@ -36,10 +36,10 @@ export class ReportController {
   }
 
   @Get('transaction')
-  @ApiOperation({ summary: 'پیگیری تراکنش' })
+  @ApiOperation({ summary: 'Track transaction' })
   @ApiOkResponse({
     status: 200,
-    description: 'جزئیات تراکنش با موفقیت دریافت شد.',
+    description: 'Transaction details retrieved successfully.',
     type: ResponseModel<GetTransactionDetailResponseDto>,
   })
   async getTransactionDetail(

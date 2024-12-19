@@ -3,7 +3,7 @@ import { IsString, IsNotEmpty } from 'class-validator';
 
 export class GetTransactionDetailQueryDto {
   @ApiProperty({
-    description: 'شماره تراکنش',
+    description: 'Transaction number',
     example: '1234567890',
     type: String,
   })

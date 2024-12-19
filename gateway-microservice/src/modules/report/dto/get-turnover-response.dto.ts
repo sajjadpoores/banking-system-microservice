@@ -4,43 +4,43 @@ import { TurnoverType } from 'src/shared/enum/turnover-type.enum';
 
 export class GetTurnoverResponseDto {
   @ApiProperty({
-    description: 'شماره تراکنش',
+    description: 'Transaction number',
     example: 'TXN1234567890',
     type: String,
   })
   transactionNumber: string;
 
   @ApiProperty({
-    description: 'شماره حساب',
+    description: 'Account number',
     example: 1000001,
     type: Number,
   })
   accountNumber: number;
 
   @ApiProperty({
-    description: 'نوع تراکنش',
+    description: 'Transaction type',
     example: TurnoverType.DEPOSIT,
     enum: TurnoverType,
   })
   type: TurnoverType;
 
   @ApiProperty({
-    description: 'مبلغ تراکنش',
+    description: 'Transaction amount',
     example: 50000,
     type: Number,
   })
   amount: number;
 
   @ApiProperty({
-    description: 'تاریخ تراکنش',
+    description: 'Transaction date',
     example: '2024-06-15T14:48:00Z',
     type: String,
   })
   transactionDate: string;
 
   @ApiProperty({
-    description: 'توضیحات تراکنش',
-    example: 'واریز حقوق ماه ژوئن',
+    description: 'Transaction description',
+    example: 'June salary deposit',
     type: String,
   })
   description: string;
@@ -48,7 +48,7 @@ export class GetTurnoverResponseDto {
   @ApiProperty({
     type: String,
     enum: TransactionStatus,
-    description: 'وضعیت پرداخت',
+    description: 'Payment status',
     example: TransactionStatus.PENDING,
   })
   status: TransactionStatus;

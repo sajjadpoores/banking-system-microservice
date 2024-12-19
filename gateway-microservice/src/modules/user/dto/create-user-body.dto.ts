@@ -13,9 +13,9 @@ export class CreateUserDto {
   @IsString()
   @Length(10)
   @IsNumberString()
-  @IsIranianNationalCode({ message: 'شماره ملی وارد شده صحیح نمی‌باشد' })
+  @IsIranianNationalCode({ message: 'The entered national ID is invalid.' })
   @ApiProperty({
-    description: 'شماره ملی',
+    description: 'National ID',
     example: '0720500494',
     type: String,
   })
@@ -23,29 +23,30 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @ApiProperty({
-    description: 'نام کاربر',
+    description: 'User name',
     example: 'Ali Rezaei',
     type: String,
   })
   name: string;
 
   @IsNotEmpty()
-  @MinLength(8, { message: 'رمز عبور باید حداقل ۸ کاراکتر باشد' })
+  @MinLength(8, { message: 'The password must be at least 8 characters long.' })
   @Matches(/[A-Z]/, {
-    message: 'رمز عبور باید حداقل شامل یک حرف بزرگ باشد',
+    message: 'The password must include at least one uppercase letter.',
   })
   @Matches(/[a-z]/, {
-    message: 'رمز عبور باید حداقل شامل یک حرف کوچک باشد',
+    message: 'The password must include at least one lowercase letter.',
   })
   @Matches(/\d/, {
-    message: 'رمز عبور باید حداقل شامل یک عدد باشد',
+    message: 'The password must include at least one number.',
   })
   @Matches(/[@$!%*?&#]/, {
-    message: 'رمز عبور باید حداقل شامل یک کاراکتر خاص باشد (@$!%*?&#)',
+    message:
+      'The password must include at least one special character (@$!%*?&#).',
   })
   @ApiProperty({
     description:
-      'رمز عبور - حداقل ۸ کاراکتر، شامل حداقل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک کاراکتر خاص',
+      'Password - at least 8 characters, including at least one uppercase letter, one lowercase letter, one number, and one special character',
     example: 'Password@123',
     type: String,
   })

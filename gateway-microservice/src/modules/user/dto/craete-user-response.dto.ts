@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserResponseDto {
   @ApiProperty({
-    description: 'شماره ملی',
+    description: 'National ID',
     example: '0720500494',
     type: String,
   })

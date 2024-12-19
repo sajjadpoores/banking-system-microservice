@@ -4,7 +4,7 @@ import { TransactionStatus } from 'src/shared/enum/transaction-status.enum';
 export class TransferResponseDto {
   @ApiProperty({
     type: String,
-    description: 'شناسه تراکنش',
+    description: 'Transaction identifier',
     example: '1234567890',
   })
   transactionNumber: string;
@@ -12,7 +12,7 @@ export class TransferResponseDto {
   @ApiProperty({
     type: String,
     enum: TransactionStatus,
-    description: 'وضعیت پرداخت',
+    description: 'Payment status',
     example: TransactionStatus.PENDING,
   })
   transactionStatus: TransactionStatus;

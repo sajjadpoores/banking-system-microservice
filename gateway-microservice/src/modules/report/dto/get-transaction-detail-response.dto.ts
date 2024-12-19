@@ -4,14 +4,14 @@ import { TransferType } from 'src/shared/enum/transfer-type.enum';
 
 export class GetTransactionDetailResponseDto {
   @ApiProperty({
-    description: 'شماره تراکنش',
+    description: 'Transaction number',
     example: 'TXN1234567890',
     type: String,
   })
   transactionNumber: string;
 
   @ApiProperty({
-    description: 'شماره حساب مبدا',
+    description: 'Source account number',
     example: 1000001,
     type: Number,
     nullable: true,
@@ -19,36 +19,36 @@ export class GetTransactionDetailResponseDto {
   sourceAccountNumber?: number;
 
   @ApiProperty({
-    description: 'شماره حساب مقصد',
+    description: 'Destination account number',
     example: 1000002,
     type: Number,
   })
   destinationAccountNumber: number;
 
   @ApiProperty({
-    description: 'نوع انتقال',
+    description: 'Transfer type',
     example: TransferType.TRANSFER,
     enum: TransferType,
   })
   transferType: TransferType;
 
   @ApiProperty({
-    description: 'مبلغ تراکنش',
+    description: 'Transaction amount',
     example: 50000,
     type: Number,
   })
   amount: number;
 
   @ApiProperty({
-    description: 'تاریخ تراکنش',
+    description: 'Transaction date',
     example: '2024-06-15T14:48:00Z',
     type: String,
   })
   transactionDate: string;
 
   @ApiProperty({
-    description: 'توضیحات تراکنش',
-    example: 'واریز حقوق ماه ژوئن',
+    description: 'Transaction description',
+    example: 'June salary deposit',
     type: String,
   })
   description: string;
@@ -56,7 +56,7 @@ export class GetTransactionDetailResponseDto {
   @ApiProperty({
     type: String,
     enum: TransactionStatus,
-    description: 'وضعیت پرداخت',
+    description: 'Payment status',
     example: TransactionStatus.PENDING,
   })
   status: TransactionStatus;

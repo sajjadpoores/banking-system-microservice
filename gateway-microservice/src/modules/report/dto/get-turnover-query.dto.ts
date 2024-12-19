@@ -14,7 +14,7 @@ import { TurnoverType } from 'src/shared/enum/turnover-type.enum';
 
 export class GetTurnoverQueryDto {
   @ApiProperty({
-    description: 'شماره حساب',
+    description: 'Account number',
     example: 1000001,
     type: Number,
   })
@@ -24,7 +24,7 @@ export class GetTurnoverQueryDto {
   accountNumber: number;
 
   @ApiPropertyOptional({
-    description: 'تاریخ شروع تراکنش (ISO 8601)',
+    description: 'Transaction start date (ISO 8601)',
     example: '2024-01-01T00:00:00Z',
     type: String,
   })
@@ -33,7 +33,7 @@ export class GetTurnoverQueryDto {
   startDate?: string;
 
   @ApiPropertyOptional({
-    description: 'تاریخ پایان تراکنش (ISO 8601)',
+    description: 'Transaction end date (ISO 8601)',
     example: '2024-12-31T23:59:59Z',
     type: String,
   })
@@ -42,7 +42,7 @@ export class GetTurnoverQueryDto {
   endDate?: string;
 
   @ApiPropertyOptional({
-    description: 'حداقل مبلغ تراکنش',
+    description: 'Minimum transaction amount',
     example: 1000,
     type: Number,
   })
@@ -53,7 +53,7 @@ export class GetTurnoverQueryDto {
   minAmount?: number;
 
   @ApiPropertyOptional({
-    description: 'حداکثر مبلغ تراکنش',
+    description: 'Maximum transaction amount',
     example: 100000,
     type: Number,
   })
@@ -64,7 +64,7 @@ export class GetTurnoverQueryDto {
   maxAmount?: number;
 
   @ApiPropertyOptional({
-    description: 'نوع تراکنش',
+    description: 'Transaction type',
     example: TurnoverType.DEPOSIT,
     enum: TurnoverType,
   })

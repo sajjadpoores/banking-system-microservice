@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class DepositBodyDto {
   @ApiProperty({
-    description: 'شناسه حساب',
+    description: 'Account identifier',
     example: 1000001,
     type: Number,
   })
@@ -13,13 +13,13 @@ export class DepositBodyDto {
 
   @ApiProperty({
     type: Number,
-    description: 'مبلغ واریزی',
+    description: 'Deposit amount',
     example: 100000,
   })
   @IsNotEmpty()
   @IsPositive()
   @Max(100000000, {
-    message: 'ماکزیموم مبلغ قابل انتقال 100 میلیون ریال می‌باشد.',
+    message: 'The maximum transferable amount is 100 million rials.',
   })
   @IsNumber()
   amount: number;

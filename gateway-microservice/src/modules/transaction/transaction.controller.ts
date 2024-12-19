@@ -19,7 +19,7 @@ export class TransactionController {
 
   @Post('transfer')
   @RequireAccountAccess('sourceAccountNumber')
-  @ApiOperation({ summary: 'انتقال وجه از یک حساب به حساب دیگر' })
+  @ApiOperation({ summary: 'Transfer funds from one account to another' })
   @ApiOkResponse({
     status: 201,
     description: 'Transaction is sent.',

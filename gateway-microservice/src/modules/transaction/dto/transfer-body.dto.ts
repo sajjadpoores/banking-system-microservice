@@ -12,7 +12,7 @@ import {
 export class TransferBodyDto {
   @ApiProperty({
     type: Number,
-    description: 'شماره حساب مبدا',
+    description: 'Source account number',
     example: 1000001,
   })
   @IsNumber()
@@ -21,7 +21,7 @@ export class TransferBodyDto {
 
   @ApiProperty({
     type: Number,
-    description: 'شماره حساب مقصد',
+    description: 'Destination account number',
     example: 1000002,
   })
   @IsNumber()
@@ -30,13 +30,13 @@ export class TransferBodyDto {
 
   @ApiProperty({
     type: Number,
-    description: 'مبلغ',
+    description: 'Amount',
     example: 10000,
   })
   @IsNotEmpty()
   @IsPositive()
   @Max(100000000, {
-    message: 'ماکزیموم مبلغ قابل انتقال 100 میلیون ریال می‌باشد.',
+    message: 'The maximum transferable amount is 100 million rials.',
   })
   @IsNumber()
   amount: number;
@@ -44,8 +44,8 @@ export class TransferBodyDto {
   @ApiProperty({
     type: String,
     required: false,
-    description: 'توضیحات',
-    example: 'پرداخت بدهی قبلی',
+    description: 'Description',
+    example: 'Payment for previous debt',
   })
   @IsOptional()
   @IsString()

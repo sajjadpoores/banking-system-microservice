@@ -19,7 +19,7 @@ export class TransactionService {
     if (payload.sourceAccountNumber === payload.destinationAccountNumber) {
       return {
         status: ReponseStatus.FAILED,
-        message: 'حساب مبدا و مقصد نمی تواند یکی باشد',
+        message: 'Source and destination accounts cannot be the same',
         data: null,
       };
     }

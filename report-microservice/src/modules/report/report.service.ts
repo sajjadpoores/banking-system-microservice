@@ -22,7 +22,7 @@ export class ReportService {
     if (!transactions.length) {
       return {
         status: ReponseStatus.SUCCESS,
-        message: 'هیچ تراکنشی یافت نشد.',
+        message: 'No transactions found.',
         data: [],
       };
     }
@@ -46,7 +46,7 @@ export class ReportService {
 
     return {
       status: ReponseStatus.SUCCESS,
-      message: 'تراکنش‌ها با موفقیت دریافت شدند.',
+      message: 'Transactions retrieved successfully.',
       data: formattedTransactions,
     };
   }
@@ -81,7 +81,7 @@ export class ReportService {
     if (!transaction) {
       return {
         status: ReponseStatus.FAILED,
-        message: 'تراکنش یافت نشد.',
+        message: 'Transaction not found.',
         data: null,
       };
     }
@@ -109,7 +109,7 @@ export class ReportService {
 
     return {
       status: ReponseStatus.SUCCESS,
-      message: 'جزئیات تراکنش با موفقیت دریافت شد.',
+      message: 'Transaction details retrieved successfully.',
       data: response,
     };
   }

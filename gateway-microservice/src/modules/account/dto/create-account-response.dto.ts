@@ -2,14 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateAccountReponseDto {
   @ApiProperty({
-    description: 'شماره حساب',
+    description: 'Account number',
     example: 1000001,
     type: String,
   })
   accountNumber: number;
 
   @ApiProperty({
-    description: 'موجودی حساب',
+    description: 'Account balance',
     example: 20000000,
     type: Number,
   })
