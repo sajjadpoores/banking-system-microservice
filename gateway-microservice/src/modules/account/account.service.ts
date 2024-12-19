@@ -59,12 +59,16 @@ export class AccountService {
   async withdraw(
     payload: withdrawBodyDto,
   ): Promise<ResponseModel<withdrawResponseDto>> {
-    return firstValueFrom(
-      this._rabbitmqClient.send<ResponseModel<withdrawResponseDto>>(
-        'account.withdraw',
-        payload,
-      ),
-    );
+    try {
+      return firstValueFrom(
+        this._rabbitmqClient.send<ResponseModel<withdrawResponseDto>>(
+          'account.withdraw',
+          payload,
+        ),
+      );
+    } catch (error) {
+      return error;
+    }
   }
 
   async getBalance(

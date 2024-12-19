@@ -9,7 +9,6 @@ export class AccountEntity extends BaseCustomEntity {
   @Column({ type: 'varchar', nullable: false })
   userId: string;
 
-  @Column({ type: 'bigint', nullable: false, unique: true })
   @Column({
     type: 'bigint',
     nullable: false,

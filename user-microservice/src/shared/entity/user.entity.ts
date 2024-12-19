@@ -6,7 +6,7 @@ export class UserEntity extends BaseCustomEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar', nullable: false, unique: true })
   userId: string;
 
   @Column()
