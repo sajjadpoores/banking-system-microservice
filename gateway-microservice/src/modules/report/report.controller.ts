@@ -11,6 +11,7 @@ import { GetTurnoverResponseDto } from './dto/get-turnover-response.dto';
 import { GetTurnoverQueryDto } from './dto/get-turnover-query.dto';
 import { GetTransactionDetailResponseDto } from './dto/get-transaction-detail-response.dto';
 import { GetTransactionDetailQueryDto } from './dto/get-transaction-detail-query.dto';
+import { RequireAccountAccess } from 'src/shared/decorator/require-account-access.decorator';
 
 @ApiTags('Report')
 @Controller('report')
@@ -20,6 +21,7 @@ export class ReportController {
 
   @Get('turnover')
   @ApiOperation({ summary: 'دریافت گردش حساب' })
+  @RequireAccountAccess('accountNumber')
   @ApiOkResponse({
     status: 200,
     description: 'گردش حساب با موفقیت دریافت شد.',

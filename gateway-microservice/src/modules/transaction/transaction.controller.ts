@@ -9,6 +9,7 @@ import {
 import { ResponseModel } from 'src/shared/dto/response-model.dto';
 import { TransferResponseDto } from './dto/transfer-response.dto';
 import { TransferBodyDto } from './dto/transfer-body.dto';
+import { RequireAccountAccess } from 'src/shared/decorator/require-account-access.decorator';
 
 @Controller('transaction')
 @ApiTags('Transaction')
@@ -17,6 +18,7 @@ export class TransactionController {
   constructor(private readonly _transactionService: TransactionService) {}
 
   @Post('transfer')
+  @RequireAccountAccess('sourceAccountNumber')
   @ApiOperation({ summary: 'انتقال وجه از یک حساب به حساب دیگر' })
   @ApiOkResponse({
     status: 201,

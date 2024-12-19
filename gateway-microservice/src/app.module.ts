@@ -8,6 +8,7 @@ import { UserModule } from './modules/user/user.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './shared/guard/jwt.guard';
 import { JwtModule } from '@nestjs/jwt';
+import { RedisModule } from './modules/redis/redis.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { JwtModule } from '@nestjs/jwt';
     ReportModule,
     TransactionModule,
     UserModule,
+    RedisModule,
   ],
   controllers: [],
   providers: [

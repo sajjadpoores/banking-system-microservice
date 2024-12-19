@@ -13,6 +13,7 @@ import { DepositBodyDto } from './dto/deposit-body.dto';
 import { DepositResponseDto } from './dto/deposit-response.dto';
 import { GetBalanceResponseDto } from './dto/get-balance-response.dto';
 import { GetBalanceBodyDto } from './dto/get-balance-body.dto';
+import { RequireAccountAccess } from 'src/shared/decorator/require-account-access.decorator';
 
 @Controller('account')
 @ApiTags('Account')
@@ -34,6 +35,7 @@ export class AccountController {
   }
 
   @Post('deposit')
+  @RequireAccountAccess('accountNumber')
   @ApiOperation({ summary: 'افزایش موجودی حساب' })
   @ApiOkResponse({
     status: 200,
@@ -47,6 +49,7 @@ export class AccountController {
   }
 
   @Post('balance')
+  @RequireAccountAccess('accountNumber')
   @ApiOperation({ summary: 'دریافت موجودی حساب' })
   @ApiOkResponse({
     status: 200,

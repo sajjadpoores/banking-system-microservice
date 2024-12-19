@@ -8,23 +8,39 @@ import { DepositBodyDto } from './dto/deposit-body.dto';
 import { DepositResponseDto } from './dto/deposit-response.dto';
 import { GetBalanceBodyDto } from './dto/get-balance-body.dto';
 import { GetBalanceResponseDto } from './dto/get-balance-response.dto';
+import Redis from 'ioredis';
 
 @Injectable()
 export class AccountService {
   constructor(
     @Inject('account_broker')
     private readonly _rabbitmqClient: ClientProxy,
+    @Inject('REDIS_CLIENT') private readonly _redisClient: Redis,
   ) {}
 
   async createAccount(
     payload: CreateAccountBodyDto,
   ): Promise<ResponseModel<CreateAccountReponseDto>> {
-    return firstValueFrom(
+    const result = await firstValueFrom(
       this._rabbitmqClient.send<ResponseModel<CreateAccountReponseDto>>(
         'account.create',
         payload,
       ),
     );
+
+    const accountNumber = Array.isArray(result?.data)
+      ? result.data[0]?.accountNumber
+      : result.data?.accountNumber;
+
+    if (accountNumber) {
+      await this._redisClient.hset(
+        `user:${payload.userId}:accounts`,
+        accountNumber.toString(),
+        'active',
+      );
+    }
+
+    return result;
   }
 
   async deposit(
