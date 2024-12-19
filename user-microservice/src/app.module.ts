@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
-import { AccountModule } from './modules/account/account.module';
-import { ReportModule } from './modules/report/report.module';
-import { TransactionModule } from './modules/transaction/transaction.module';
+import { TypeOrmConfigService } from './config/typeorm/typeorm.config';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
@@ -16,9 +15,7 @@ import { UserModule } from './modules/user/user.module';
       ),
       isGlobal: true,
     }),
-    AccountModule,
-    ReportModule,
-    TransactionModule,
+    TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     UserModule,
   ],
   controllers: [],
