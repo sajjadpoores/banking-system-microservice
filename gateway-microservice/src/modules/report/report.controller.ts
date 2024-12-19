@@ -1,6 +1,11 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ReportService } from './report.service';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ResponseModel } from 'src/shared/dto/response-model.dto';
 import { GetTurnoverResponseDto } from './dto/get-turnover-response.dto';
 import { GetTurnoverQueryDto } from './dto/get-turnover-query.dto';
@@ -9,6 +14,7 @@ import { GetTransactionDetailQueryDto } from './dto/get-transaction-detail-query
 
 @ApiTags('Report')
 @Controller('report')
+@ApiBearerAuth()
 export class ReportController {
   constructor(private readonly _reportService: ReportService) {}
 

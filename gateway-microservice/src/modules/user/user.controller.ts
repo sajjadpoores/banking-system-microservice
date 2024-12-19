@@ -7,9 +7,11 @@ import { CreateUserResponseDto } from './dto/craete-user-response.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { LoginBodyDto } from './dto/login-body.dto';
 import { RefreshTokenBodyDto } from './dto/refresh-token-body';
+import { Public } from 'src/shared/decorator/is-public.decorator';
 
 @Controller('user')
 @ApiTags('User')
+@Public()
 export class UserController {
   constructor(private readonly _userService: UserService) {}
 

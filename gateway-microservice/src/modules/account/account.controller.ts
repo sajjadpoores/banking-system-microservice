@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AccountService } from './account.service';
 import { CreateAccountBodyDto } from './dto/create-account-body.dto';
 import { ResponseModel } from 'src/shared/dto/response-model.dto';
@@ -11,6 +16,7 @@ import { GetBalanceBodyDto } from './dto/get-balance-body.dto';
 
 @Controller('account')
 @ApiTags('Account')
+@ApiBearerAuth()
 export class AccountController {
   constructor(private readonly _accountService: AccountService) {}
 
