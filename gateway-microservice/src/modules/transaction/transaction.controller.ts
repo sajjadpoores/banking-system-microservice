@@ -1,16 +1,24 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ResponseModel } from 'src/shared/dto/response-model.dto';
 import { TransferResponseDto } from './dto/transfer-response.dto';
 import { TransferBodyDto } from './dto/transfer-body.dto';
+import { RequireAccountAccess } from 'src/shared/decorator/require-account-access.decorator';
 
 @Controller('transaction')
 @ApiTags('Transaction')
+@ApiBearerAuth()
 export class TransactionController {
   constructor(private readonly _transactionService: TransactionService) {}
 
   @Post('transfer')
+  @RequireAccountAccess('sourceAccountNumber')
   @ApiOperation({ summary: 'انتقال وجه از یک حساب به حساب دیگر' })
   @ApiOkResponse({
     status: 201,

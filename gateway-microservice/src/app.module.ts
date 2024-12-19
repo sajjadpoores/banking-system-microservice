@@ -1,10 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { AccountModule } from './modules/account/account.module';
 import { ReportModule } from './modules/report/report.module';
 import { TransactionModule } from './modules/transaction/transaction.module';
 import { UserModule } from './modules/user/user.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './shared/guard/jwt.guard';
+import { JwtModule } from '@nestjs/jwt';
+import { RedisModule } from './modules/redis/redis.module';
 
 @Module({
   imports: [
@@ -16,12 +20,25 @@ import { UserModule } from './modules/user/user.module';
       ),
       isGlobal: true,
     }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+      }),
+    }),
     AccountModule,
     ReportModule,
     TransactionModule,
     UserModule,
+    RedisModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}
