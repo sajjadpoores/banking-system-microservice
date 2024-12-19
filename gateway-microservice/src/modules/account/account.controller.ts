@@ -15,6 +15,8 @@ import { GetBalanceBodyDto } from './dto/get-balance-body.dto';
 import { RequireAccountAccess } from 'src/shared/decorator/require-account-access.decorator';
 import { User } from 'src/shared/decorator/user.decorator';
 import { IUser } from 'src/shared/interface/user.interface';
+import { withdrawResponseDto } from './dto/withdraw-response';
+import { withdrawBodyDto } from './dto/withdraw-body.dto';
 
 @Controller('account')
 @ApiTags('Account')
@@ -47,6 +49,20 @@ export class AccountController {
     @Body() payload: DepositBodyDto,
   ): Promise<ResponseModel<DepositResponseDto>> {
     return this._accountService.deposit(payload);
+  }
+
+  @Post('withdraw')
+  @RequireAccountAccess('accountNumber')
+  @ApiOperation({ summary: 'برداشت از حساب' })
+  @ApiOkResponse({
+    status: 200,
+    description: 'برداشت از حساب انجام شد.',
+    type: ResponseModel<withdrawResponseDto>,
+  })
+  async withdraw(
+    @Body() payload: withdrawBodyDto,
+  ): Promise<ResponseModel<withdrawResponseDto>> {
+    return this._accountService.withdraw(payload);
   }
 
   @Post('balance')

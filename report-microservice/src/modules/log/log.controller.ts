@@ -4,6 +4,7 @@ import { LogService } from './log.service';
 import { TransferDoneEventPayloadDto } from './dto/transfer-done-event-payload.dto';
 import { DepositDoneEventPayloadDto } from './dto/deposit-done-event-payload.dto';
 import { TransferStartedPayloadDto } from './dto/transfer-started-payload.dto';
+import { WithdrawDoneEventPayloadDto } from './dto/withdraw-done-event-payload.dto';
 
 @Controller('log')
 export class logController {
@@ -28,6 +29,13 @@ export class logController {
     @Payload() payload: DepositDoneEventPayloadDto,
   ): Promise<boolean> {
     return this._logService.deposit(payload);
+  }
+
+  @MessagePattern('log.withdraw')
+  async WithdrawDone(
+    @Payload() payload: WithdrawDoneEventPayloadDto,
+  ): Promise<boolean> {
+    return this._logService.withdraw(payload);
   }
 
   @MessagePattern('log.gift')

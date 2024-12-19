@@ -9,6 +9,8 @@ import { DepositResponseDto } from './dto/deposit-response.dto';
 import { GetBalanceBodyDto } from './dto/get-balance-body.dto';
 import { GetBalanceResponseDto } from './dto/get-balance-response.dto';
 import Redis from 'ioredis';
+import { withdrawBodyDto } from './dto/withdraw-body.dto';
+import { withdrawResponseDto } from './dto/withdraw-response';
 
 @Injectable()
 export class AccountService {
@@ -49,6 +51,17 @@ export class AccountService {
     return firstValueFrom(
       this._rabbitmqClient.send<ResponseModel<DepositResponseDto>>(
         'account.deposit',
+        payload,
+      ),
+    );
+  }
+
+  async withdraw(
+    payload: withdrawBodyDto,
+  ): Promise<ResponseModel<withdrawResponseDto>> {
+    return firstValueFrom(
+      this._rabbitmqClient.send<ResponseModel<withdrawResponseDto>>(
+        'account.withdraw',
         payload,
       ),
     );

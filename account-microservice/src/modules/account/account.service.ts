@@ -11,6 +11,8 @@ import { DepositBodyDto } from './dto/deposit-body.dto';
 import { DepositResponseDto } from './dto/deposit-response.dto';
 import { GetBalanceBodyDto } from './dto/get-balance-body.dto';
 import { GetBalanceResponseDto } from './dto/get-balance-response.dto';
+import { withdrawBodyDto } from './dto/withdraw-body.dto';
+import { withdrawResponseDto } from './dto/withdraw-response.dto';
 
 @Injectable()
 export class AccountService {
@@ -64,6 +66,21 @@ export class AccountService {
       payload,
       this._configService.get<number>('DAILY_DEPOSIT_LIMIT'),
     );
+
+    return {
+      status: ReponseStatus.SUCCESS,
+      message: 'Deposit successfully completed.',
+      data: {
+        transactionNumber: result.transactionNumber,
+        balance: result.balance,
+      },
+    };
+  }
+
+  async withdraw(
+    payload: withdrawBodyDto,
+  ): Promise<ResponseModel<withdrawResponseDto>> {
+    const result = await this._accountRepository.withdraw(payload);
 
     return {
       status: ReponseStatus.SUCCESS,

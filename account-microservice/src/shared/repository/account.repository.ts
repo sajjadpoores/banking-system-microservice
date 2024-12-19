@@ -8,6 +8,8 @@ import { DepositBodyDto } from 'src/modules/account/dto/deposit-body.dto';
 import { DepositResponseDto } from 'src/modules/account/dto/deposit-response.dto';
 import { CreateAccountBodyDto } from 'src/modules/account/dto/create-account-body.dto';
 import { TransactionStatus } from '../enum/transaction-status.enum';
+import { withdrawBodyDto } from 'src/modules/account/dto/withdraw-body.dto';
+import { withdrawResponseDto } from 'src/modules/account/dto/withdraw-response.dto';
 
 export class AccountRepository extends Repository<AccountEntity> {
   constructor(@InjectDataSource() private dataSource: DataSource) {
@@ -302,6 +304,56 @@ export class AccountRepository extends Repository<AccountEntity> {
           amount: payload.amount,
           depositDate: new Date(),
           type: TransferType.DEPOSIT,
+          status: TransactionStatus.DONE,
+        },
+      });
+
+      await manager.save(outbox);
+    });
+
+    return {
+      transactionNumber,
+      balance: account.balance,
+    };
+  }
+
+  async withdraw(payload: withdrawBodyDto): Promise<withdrawResponseDto> {
+    let transactionNumber: string;
+    let account: AccountEntity;
+
+    await this.dataSource.transaction(async (manager) => {
+      account = await manager.findOne(AccountEntity, {
+        where: { accountNumber: payload.accountNumber },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!account) {
+        throw new Error('Account not found.');
+      }
+
+      if (account.balance < payload.amount) {
+        throw new Error('Account balance not sufficient');
+      }
+
+      account.balance -= payload.amount;
+      await manager.save(account);
+
+      const transactionNumberQueryResult = await manager.query(
+        "SELECT nextval('transaction_number_seq')",
+      );
+      transactionNumber = transactionNumberQueryResult[0].nextval.toString();
+
+      const outbox = manager.create(OutboxEntity, {
+        aggregateId: transactionNumber,
+        type: TransferType.WITHDRAWAL,
+        payload: {
+          transactionNumber,
+          destinationAccountNumber: payload.accountNumber,
+          destinationBalance: account.balance,
+          destinationUserId: account.userId,
+          amount: payload.amount,
+          depositDate: new Date(),
+          type: TransferType.WITHDRAWAL,
           status: TransactionStatus.DONE,
         },
       });
