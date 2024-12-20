@@ -16,6 +16,14 @@ The application is divided into the following microservices:
 5. **Report**: Provides detailed transaction reports and account turnover information.
 
 
+## Sequence Diagrams
+
+### Transaction/Transfer Request Flow
+
+The sequence diagram below illustrates the flow of a transfer request initiated at the Gateway, processed by the Transaction service, and executed by the Account service, with updates sent to the Report service.
+
+![Sequence Diagram](./documentation/transaction_sequence.png)
+
 ## Getting Started
 
 ### Prerequisites
