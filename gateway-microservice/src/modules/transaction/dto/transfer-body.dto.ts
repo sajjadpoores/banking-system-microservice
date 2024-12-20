@@ -10,6 +10,8 @@ import {
 } from 'class-validator';
 
 export class TransferBodyDto {
+  userId: string;
+
   @ApiProperty({
     type: Number,
     description: 'Source account number',

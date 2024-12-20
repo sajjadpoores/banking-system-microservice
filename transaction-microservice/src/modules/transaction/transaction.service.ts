@@ -26,7 +26,11 @@ export class TransactionService {
       const transactionNumber =
         await this._counterRepository.getNextTransactionNumber();
       await this.messageBrokerClient.emit('log.transferStarted', {
-        ...payload,
+        amount: payload.amount,
+        description: payload.description,
+        destinationAccountNumber: payload.destinationAccountNumber,
+        sourceAccountNumber: payload.sourceAccountNumber,
+        sourceUserId: payload.userId,
         transactionNumber,
       } as TransferStartedPayloadDto);
 
@@ -36,6 +40,7 @@ export class TransactionService {
       transaction.description = payload.description;
       transaction.destinationAccountNumber = payload.destinationAccountNumber;
       transaction.sourceAccountNumber = payload.sourceAccountNumber;
+      transaction.sourceUserId = payload.userId;
       transaction.transactionNumber = transactionNumber;
 
       await this._transactionRepository.create(transaction);

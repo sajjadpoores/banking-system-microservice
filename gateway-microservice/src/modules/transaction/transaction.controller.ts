@@ -13,6 +13,8 @@ import { ResponseModel } from 'src/shared/dto/response-model.dto';
 import { TransferResponseDto } from './dto/transfer-response.dto';
 import { TransferBodyDto } from './dto/transfer-body.dto';
 import { RequireAccountAccess } from 'src/shared/decorator/require-account-access.decorator';
+import { User } from 'src/shared/decorator/user.decorator';
+import { IUser } from 'src/shared/interface/user.interface';
 
 @ApiTags('Transaction')
 @Controller('transaction')
@@ -32,7 +34,7 @@ export class TransactionController {
         { $ref: getSchemaPath(ResponseModel) },
         {
           properties: {
-            data: { $ref: getSchemaPath(TransferResponseDto) }, // Reference the TransferResponseDto
+            data: { $ref: getSchemaPath(TransferResponseDto) },
           },
         },
       ],
@@ -40,7 +42,11 @@ export class TransactionController {
   })
   async transfer(
     @Body() payload: TransferBodyDto,
+    @User() user: IUser,
   ): Promise<ResponseModel<TransferResponseDto>> {
-    return this._transactionService.transfer(payload);
+    return this._transactionService.transfer({
+      ...payload,
+      userId: user.userId,
+    });
   }
 }
