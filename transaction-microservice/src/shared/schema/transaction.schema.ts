@@ -15,6 +15,9 @@ export class Transaction extends BaseCustomSchema {
   @Prop({ type: Number, required: true })
   sourceAccountNumber: number;
 
+  @Prop({ type: String, required: true })
+  sourceUserId: string;
+
   @Prop({ type: Number, required: true })
   amount: number;
 
