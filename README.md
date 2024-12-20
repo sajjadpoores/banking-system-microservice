@@ -1,5 +1,4 @@
 # banking-system-microservice
-A microservice architecture Nest.js app handling required APIs for a banking application
 
 ## Overview
 This project is a robust financial application built using a microservices architecture with NestJS. It comprises five distinct microservices—Gateway, User, Account, Transaction, and Report—each responsible for specific functionalities within the system. The application leverages RabbitMQ for inter-service communication, PostgreSQL and MongoDB for data persistence, and Redis for caching, ensuring scalability, reliability, and maintainability.
