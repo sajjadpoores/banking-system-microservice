@@ -17,6 +17,7 @@ export class LogService {
       await this._transferLogRepository.create({
         transferNumber: payload.transactionNumber,
         sourceAccount: payload.sourceAccountNumber,
+        sourceUserId: payload.sourceUserId,
         destinationAccount: payload.destinationAccountNumber,
         description: payload.description,
         amount: payload.amount,
