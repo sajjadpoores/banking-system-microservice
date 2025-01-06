@@ -41,7 +41,8 @@ export class LogService {
         );
       if (transaction) {
         transaction.sourceAccount = payload.sourceAccountNumber;
-        transaction.sourceUserId = payload.sourceUserId;
+        transaction.sourceUserId =
+          transaction.sourceUserId || payload.sourceUserId;
         transaction.sourceBalance = payload.sourceBalance;
         transaction.destinationBalance = payload.destinationBalance;
         transaction.destinationUserId = payload.destinationUserId;
