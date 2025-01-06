@@ -9,6 +9,7 @@ import { Model } from 'mongoose';
 import { GetTurnoverQueryDto } from 'src/modules/report/dto/get-turnover.dto';
 import { TurnoverType } from '../enum/turnover-type.enum';
 import { TransactionStatus } from '../enum/transaction-status.enum';
+import { TransferType } from '../enum/transfer-type.enum';
 
 @Injectable()
 export class TransferLogRepository extends BaseRepository<TransferLogDocument> {
@@ -24,9 +25,36 @@ export class TransferLogRepository extends BaseRepository<TransferLogDocument> {
     };
 
     if (filters.type === TurnoverType.DEPOSIT) {
-      query.destinationAccount = filters.accountNumber;
+      query.$or = [
+        { type: TransferType.GIFT, destinationAccount: filters.accountNumber },
+        {
+          type: TransferType.DEPOSIT,
+          destinationAccount: filters.accountNumber,
+        },
+        {
+          type: TransferType.TRANSFER,
+          destinationAccount: filters.accountNumber,
+        },
+        {
+          type: TransferType.HARD_TRANSFER,
+          destinationAccount: filters.accountNumber,
+        },
+      ];
     } else if (filters.type === TurnoverType.WITHDRAWAL) {
-      query.sourceAccount = filters.accountNumber;
+      query.$or = [
+        {
+          type: TransferType.WITHDRAWAL,
+          destinationAccount: filters.accountNumber,
+        },
+        {
+          type: TransferType.TRANSFER,
+          sourceAccount: filters.accountNumber,
+        },
+        {
+          type: TransferType.HARD_TRANSFER,
+          sourceAccount: filters.accountNumber,
+        },
+      ];
     } else {
       query.$or = [
         { sourceAccount: filters.accountNumber },
